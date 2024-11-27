@@ -3,7 +3,7 @@ class SpellService {
     this.spellRepository = spellRepository;
     this.dnd5eClient = dnd5eClient;
 
-    this.originalSpells = this.dnd5eClient.getSpells();  // Ensure this only happens once
+    this.originalSpells = this.dnd5eClient.getSpells();
   }
   
   getOriginalSpells = () => {
@@ -26,7 +26,6 @@ class SpellService {
     return [...originalSpells, ...customSpells];
   }
   
-  // Finds a spell first in custom list, then in original list
   async findSpell(spellIndex) {
     let spell = await this.spellRepository.getByIndex(spellIndex);
     
@@ -39,6 +38,18 @@ class SpellService {
     }
 
     return spell;
+  }
+
+  async deleteSpell(spellIndex) {
+    const customSpells = await this.getCustomSpells();
+    const spell = customSpells.find(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
+
+    if (!spell) {
+      throw new Error(`Spell with index ${spellIndex} not found in custom spells.`);
+    }
+
+    await this.spellRepository.deleteOne(spellIndex);
+    return `Spell with index ${spellIndex} successfully deleted.`;
   }
 }
 
