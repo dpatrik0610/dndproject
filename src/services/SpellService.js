@@ -51,6 +51,20 @@ class SpellService {
     await this.spellRepository.deleteOne(spellIndex);
     return `Spell with index ${spellIndex} successfully deleted.`;
   }
+
+  async createSpell(spellData) {
+    try {
+      // TODO: Validation?
+      await this.spellRepository.create(spellData);
+
+      return `Spell with index ${spellData.index} successfully created.`;
+    } catch (err) {
+      
+      console.error("Error creating the spell:", err.message);
+      throw new Error("Couldn't create spell.");
+    }
+  }
+
 }
 
 module.exports = SpellService;
