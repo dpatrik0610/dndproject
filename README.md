@@ -11,3 +11,4 @@
 │   ├── utils/                 # Utility functions
 │   └── index.js               # Entry point
 ```
+Used dependencies could be found in: ``package.json``
