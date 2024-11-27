@@ -12,3 +12,6 @@
 │   └── index.js               # Entry point
 ```
 Used dependencies could be found in: ``package.json``
+
+Based on https://www.dnd5eapi.co/
+Huge thanks for the easy-to-use API :)
