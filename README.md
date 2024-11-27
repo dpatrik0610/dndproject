@@ -8,4 +8,4 @@
 │   ├── routes/                # Route definitions
 │   ├── middlewares/           # Express middleware
 │   ├── utils/                 # Utility functions
-│───└── index.js               # Entry point
+│   └── index.js               # Entry point
