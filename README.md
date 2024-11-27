@@ -1,4 +1,5 @@
 # dndproject
+```plaintext
 ├── src/
 │   ├── config/                # Configuration files (database connection)
 │   ├── controllers/           # Controllers to handle requests
@@ -9,3 +10,4 @@
 │   ├── middlewares/           # Express middleware
 │   ├── utils/                 # Utility functions
 │   └── index.js               # Entry point
+```
