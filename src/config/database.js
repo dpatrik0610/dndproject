@@ -1,4 +1,3 @@
-const { error } = require('console');
 const { MongoClient } = require('mongodb');
 
 let dbInstance = null;
@@ -61,7 +60,7 @@ const closeDB = async () => {
 const listCollections = async () => {
   try {
     const collections = await dbInstance.listCollections().toArray();
-    
+
     return collections.map(col => col.name);
     } catch (err) {
     console.error('Error listing collections:', err);

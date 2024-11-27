@@ -1,10 +1,15 @@
 require('dotenv').config({ path: './.env' });
 const express = require('express');
 
+// Database
 const { connectDB, getDB } = require('./config/database');
+
+// Routes
 const playerRoutes = require('./routes/playerRoutes');
 const ping = require('./routes/ping');
+const spellRoutes = require('./routes/spellroutes');
 
+// Utils
 const logEndpoints = require('./utils/logEndpoints');
 const logCollections = require('./utils/logCollections');
 
@@ -17,8 +22,9 @@ connectDB()
   .then(() => {
     const db = getDB();
 
-    app.use('/api/players', playerRoutes(db, "Players"));
     app.use('/api/ping', ping());
+    app.use('/api/players', playerRoutes(db, "Players"));
+    app.use('/api/spells', spellRoutes());
 
     app.listen(PORT, async () => {
       console.log(`Server running on port ${PORT}`);
