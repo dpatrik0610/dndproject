@@ -1,28 +1,5 @@
 const axios = require('axios');
-
-class Cache {
-  constructor(expiryTime= 60*60*1000 /*1 hour*/){
-    this.cache = new Map();
-    this.expiryTime = expiryTime;
-  }
-
-  get(path){
-    const cacheEntry = this.cache.get(path);
-    const currentTime = Date.now();
-
-    if (cacheEntry && (currentTime - cacheEntry.timestamp < this.expiryTime)) {
-      return cacheEntry.data;
-    }
-
-    return null;
-  }
-
-  set(path, data){
-    const timestamp = Date.now();
-    this.cache.set(path, {data, timestamp});
-  }
-}
-const cache = new Map();
+const NodeCache = require('node-cache');
 
 class Dnd5eClient {
   constructor() {
@@ -32,7 +9,12 @@ class Dnd5eClient {
       throw new Error("Base URL for DnD 5e API not found. Please set DND_5E_URL in the .env file.");
     }
 
-    // Dynamically create methods for each API path
+    this.cache = new NodeCache({ 
+      stdTTL: 600, 
+      checkperiod: 240
+    });
+
+    // Dynamically creating methods for each API path
     this.resources = [
       "ability-scores", "alignments", "backgrounds", "classes", "conditions",
       "damage-types", "equipment", "equipment-categories", "feats", "features",
@@ -41,10 +23,9 @@ class Dnd5eClient {
       "subraces", "traits", "weapon-properties"
     ];
 
-    // This generates class methods dynamically, because dnd5eAPI has many base endpoints.
     this.resources.forEach(resource => {
       const methodName = `get${this.capitalize(resource)}`;
-    
+
       this[methodName] = (id = null) => {
         const path = `/api/${resource}${id ? `/${id}` : ''}`;
         
@@ -59,15 +40,18 @@ class Dnd5eClient {
   capitalize = (str) => str.replace(/(?:^|-)(\w)/g, (_, c) => c.toUpperCase());
 
   async getData(path) {
-    if (cache.has(path)) {
-      return cache.get(path);
+    // Check if the path is cached in memory
+    const cachedData = this.cache.get(path);
+    if (cachedData) {
+      return cachedData;
     }
 
     const URI = `${this.baseURL}${path}`;
     try {
       const response = await axios.get(URI);
       const data = response.data.results || response.data;
-      cache.set(path, data);
+
+      this.cache.set(path, data);
       return data;
     } catch (err) {
       console.error(`Error fetching data from ${URI}: ${err.message}`);

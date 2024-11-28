@@ -3,9 +3,19 @@ class SpellService {
     this.spellRepository = spellRepository;
     this.dnd5eClient = dnd5eClient;
 
-    this.originalSpells = this.dnd5eClient.getSpells();
+    this.originalSpells = [];
+    this.init();
   }
-  
+
+  async init() {
+    try {
+      this.originalSpells = await this.dnd5eClient.getSpells();
+      console.log("All DnD5e Spells Imported.");
+    } catch (err) {
+      console.error("Error loading spells:", err.message);
+    }
+  }
+
   getOriginalSpells = () => {
     return this.originalSpells;
   }
