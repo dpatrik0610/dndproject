@@ -1,4 +1,5 @@
 const axios = require('axios');
+const cache = new Map();
 
 class Dnd5eClient {
   constructor() {
@@ -10,39 +11,44 @@ class Dnd5eClient {
   }
 
   getBasePaths = () => this.getData("/api");
-  getAbilityScores = () => this.getData("/api/ability-scores");
-  getAlignments = () => this.getData("/api/alignments");
-  getBackgrounds = () => this.getData("/api/backgrounds");
-  getClasses = () => this.getData("/api/classes");
-  getConditions = () => this.getData("/api/conditions");
-  getDamageTypes = () => this.getData("/api/damage-types");
-  getEquipment = () => this.getData("/api/equipment");
-  getEquipmentCategories = () => this.getData("/api/equipment-categories");
-  getFeats = () => this.getData("/api/feats");
-  getFeatures = () => this.getData("/api/features");
-  getLanguages = () => this.getData("/api/languages");
-  getMagicItems = () => this.getData("/api/magic-items");
-  getMagicSchools = () => this.getData("/api/magic-schools");
-  getMonsters = () => this.getData("/api/monsters");
-  getProficiencies = () => this.getData("/api/proficiencies");
-  getRaces = () => this.getData("/api/races");
-  getRuleSections = () => this.getData("/api/rule-sections");
-  getRules = () => this.getData("/api/rules");
-  getSkills = () => this.getData("/api/skills");
-  getSpells = () => this.getData("/api/spells");
-  getSubclasses = () => this.getData("/api/subclasses");
-  getSubraces = () => this.getData("/api/subraces");
-  getTraits = () => this.getData("/api/traits");
-  getWeaponProperties = () => this.getData("/api/weapon-properties");
+  getAbilityScores = (id = null) => this.getData(`/api/ability-scores${id ? `/${id}` : ''}`);
+  getAlignments = (id = null) => this.getData(`/api/alignments${id ? `/${id}` : ''}`);
+  getBackgrounds = (id = null) => this.getData(`/api/backgrounds${id ? `/${id}` : ''}`);
+  getClasses = (id = null) => this.getData(`/api/classes${id ? `/${id}` : ''}`);
+  getConditions = (id = null) => this.getData(`/api/conditions${id ? `/${id}` : ''}`);
+  getDamageTypes = (id = null) => this.getData(`/api/damage-types${id ? `/${id}` : ''}`);
+  getEquipment = (id = null) => this.getData(`/api/equipment${id ? `/${id}` : ''}`);
+  getEquipmentCategories = (id = null) => this.getData(`/api/equipment-categories${id ? `/${id}` : ''}`);
+  getFeats = (id = null) => this.getData(`/api/feats${id ? `/${id}` : ''}`);
+  getFeatures = (id = null) => this.getData(`/api/features${id ? `/${id}` : ''}`);
+  getLanguages = (id = null) => this.getData(`/api/languages${id ? `/${id}` : ''}`);
+  getMagicItems = (id = null) => this.getData(`/api/magic-items${id ? `/${id}` : ''}`);
+  getMagicSchools = (id = null) => this.getData(`/api/magic-schools${id ? `/${id}` : ''}`);
+  getMonsters = (id = null) => this.getData(`/api/monsters${id ? `/${id}` : ''}`);
+  getProficiencies = (id = null) => this.getData(`/api/proficiencies${id ? `/${id}` : ''}`);
+  getRaces = (id = null) => this.getData(`/api/races${id ? `/${id}` : ''}`);
+  getRuleSections = (id = null) => this.getData(`/api/rule-sections${id ? `/${id}` : ''}`);
+  getRules = (id = null) => this.getData(`/api/rules${id ? `/${id}` : ''}`);
+  getSkills = (skill = null) => this.getData(`/api/skills${skill ? `/${skill}` : ''}`);
+  getSpells = (spell = null) => this.getData(`/api/spells${spell ? `/${spell}` : ''}`);
+  getSubclasses = (id = null) => this.getData(`/api/subclasses${id ? `/${id}` : ''}`);
+  getSubraces = (id = null) => this.getData(`/api/subraces${id ? `/${id}` : ''}`);
+  getTraits = (id = null) => this.getData(`/api/traits${id ? `/${id}` : ''}`);
+  getWeaponProperties = (id = null) => this.getData(`/api/weapon-properties${id ? `/${id}` : ''}`);
 
   async getData(path) {
+    if (cache.has(path)) {
+      return cache.get(path);
+    }
+
     const URI = `${this.baseURL}${path}`;
     try {
       const response = await axios.get(URI);
-      return response.data.results;
-    } 
-    catch (err) {
-      console.error(`Couldn't fetch data from: ${URI} - ${err.message}`);
+      const data = response.data.results || response.data;
+      cache.set(path, data);
+      return data;
+    } catch (err) {
+      console.error(`Error fetching data from ${URI}: ${err.message}`);
       throw new Error(`Failed to fetch from ${URI}: ${err.message}`);
     }
   }

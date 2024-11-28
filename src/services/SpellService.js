@@ -25,22 +25,32 @@ class SpellService {
     const customSpells = await this.getCustomSpells();
     return [...originalSpells, ...customSpells];
   }
-  
-  async findSpell(spellIndex) {
-    let spell = await this.spellRepository.getByIndex(spellIndex);
-    
-    if (!spell) {
-      spell = (await this.originalSpells).find(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
-    }
 
+  async spellExists(spellIndex) {
+    if (!spellIndex) throw new Error("Argument must have a value!");
+
+    let exists = (await this.spellRepository.getByIndex(spellIndex)) ? true : false;
+    if (!exists) {
+      exists = (await this.getOriginalSpells()).some(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
+    }
+    return exists;
+  }
+  
+  async getSpellDetails(spellIndex) {
+    if (!spellIndex) throw new Error("Argument must have a value!");
+    if (!(await this.spellExists(spellIndex))) return null;
+
+    let spell = await this.spellRepository.getByIndex(spellIndex);
     if (!spell) {
-      return null;
+      spell = await this.dnd5eClient.getSpells(spellIndex);
     }
 
     return spell;
   }
 
   async deleteSpell(spellIndex) {
+    if (!spellIndex) throw new Error("Argument must have a value!");
+
     const customSpells = await this.getCustomSpells();
     const spell = await customSpells.find(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
 
@@ -53,6 +63,8 @@ class SpellService {
   }
 
   async createSpell(spellData) {
+    if (!spellData) throw new Error("Argument must have a value!");
+
     try {
       // TODO: Validation?
       await this.spellRepository.create(spellData);
@@ -66,6 +78,8 @@ class SpellService {
   }
 
   async updateSpell(spellIndex, spellData) {
+    if (!spellIndex || !spellData) throw new Error("Argument must have a value!");
+
     try {
       console.log(spellIndex);
       const updateResult = await this.spellRepository.updateSpell(spellIndex, spellData);

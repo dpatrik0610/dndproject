@@ -24,11 +24,10 @@ class SpellController {
   
     async getByIndex(req, res) {
       try {
-        const spell = await this.spellService.findSpell(req.params.index);
-        if (!spell) {
-          return res.status(404).json({ message: 'Spell not found' });
-        }
-        res.status(200).json(spell);
+        const spell = await this.spellService.getSpellDetails(req.params.index);
+        if (!spell) return res.status(404).json({message: `Spell ${res.params.index} not found.`});
+
+        return res.status(200).json(spell);
       } catch (err) {
         res.status(400).json({ error: err.message });
       }
