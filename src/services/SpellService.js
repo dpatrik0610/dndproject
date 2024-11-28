@@ -30,11 +30,11 @@ class SpellService {
     let spell = await this.spellRepository.getByIndex(spellIndex);
     
     if (!spell) {
-      spell = this.originalSpells.find(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
+      spell = (await this.originalSpells).find(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
     }
 
     if (!spell) {
-      throw new Error(`Spell with index ${spellIndex} not found.`);
+      return null;
     }
 
     return spell;
@@ -42,7 +42,7 @@ class SpellService {
 
   async deleteSpell(spellIndex) {
     const customSpells = await this.getCustomSpells();
-    const spell = customSpells.find(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
+    const spell = await customSpells.find(spell => spell.index.toLowerCase() === spellIndex.toLowerCase());
 
     if (!spell) {
       throw new Error(`Spell with index ${spellIndex} not found in custom spells.`);
@@ -65,6 +65,22 @@ class SpellService {
     }
   }
 
+  async updateSpell(spellIndex, spellData) {
+    try {
+      console.log(spellIndex);
+      const updateResult = await this.spellRepository.updateSpell(spellIndex, spellData);
+  
+      if (updateResult.modifiedCount === 0) {
+        return null;
+      }
+  
+      return { message: `Spell with index "${spellIndex}" successfully updated.` };
+    } catch (err) {
+      console.error("Error updating the spell:", err.message);
+      throw new Error("Couldn't update spell.");
+    }
+  }
+  
 }
 
 module.exports = SpellService;
