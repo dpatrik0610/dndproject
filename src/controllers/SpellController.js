@@ -40,8 +40,8 @@ class SpellController {
         if(spellExists) {
           return res.status(409).json({message: "Spell already exists with this index."})
         }
-          const result = await this.spellService.createSpell(req.body);
-  
+
+        const result = await this.spellService.createSpell(req.body);
         res.status(201).json({ message: result });
       } catch (err) {
         res.status(400).json({ error: err.message });
@@ -79,4 +79,3 @@ class SpellController {
   }
   
   module.exports = SpellController;
-  
