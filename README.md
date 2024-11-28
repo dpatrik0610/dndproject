@@ -20,7 +20,7 @@ git clone https://github.com/dpatrik0610/dndproject.git
 ```
 2. Install dependencies (Used dependencies could be found in: ``package.json``)
 ```bash
-cd .\\dndproject\\src\\
+cd .\dndproject\src\
 npm install
 ```
 3. Set up the environment variable for the D&D 5e API URL:
