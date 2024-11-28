@@ -18,6 +18,7 @@ module.exports = (db) => {
     const spellController = new SpellController(spellService)
 
     router.get('/', (req, res) => spellController.getAll(req, res));
+    router.get('/customspells', (req, res) => spellController.getAllCustom(req, res));
     router.get('/:index', (req, res) => spellController.getByIndex(req, res));
 
     router.post('/', (req, res) => spellController.create(req, res));
