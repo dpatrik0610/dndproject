@@ -22,7 +22,7 @@ class SpellService {
   
   getCustomSpells = async () => {
     try {
-      return await this.spellRepository.getAll();
+      return await this.spellRepository.getAllShort();
     } catch (err) {
       console.error("Couldn't get custom spells from repository.");
       throw new Error("Couldn't get custom spells from repository.");
@@ -76,7 +76,6 @@ class SpellService {
     if (!spellData) throw new Error("Argument must have a value!");
 
     try {
-      // TODO: Validation?
       await this.spellRepository.create(spellData);
 
       return `Spell with index ${spellData.index} successfully created.`;

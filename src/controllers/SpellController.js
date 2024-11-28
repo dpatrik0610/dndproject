@@ -36,7 +36,7 @@ class SpellController {
     // Create a new spell (Added to custom list)
     async create(req, res) {
       try {
-        const spellExists = await this.spellService.findSpell(req.body.index);
+        const spellExists = await this.spellService.spellExists(req.body.index);
         if(spellExists) {
           return res.status(409).json({message: "Spell already exists with this index."})
         }
