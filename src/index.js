@@ -5,9 +5,9 @@ const express = require('express');
 const { connectDB, getDB } = require('./config/database');
 
 // Routes
-const playerRoutes = require('./routes/playerRoutes');
-const ping = require('./routes/ping');
-const spellRoutes = require('./routes/spellroutes');
+const ping = require('./routes/Ping');
+const playerRoutes = require('./routes/PlayerRoutes');
+const spellRoutes = require('./routes/SpellRoutes');
 
 // Utils
 const logEndpoints = require('./utils/logEndpoints');
@@ -23,8 +23,8 @@ connectDB()
     const db = getDB();
 
     app.use('/api/ping', ping());
-    app.use('/api/players', playerRoutes(db, "Players"));
-    app.use('/api/spells', spellRoutes());
+    app.use('/api/players', playerRoutes(db));
+    app.use('/api/spells', spellRoutes(db));
 
     app.listen(PORT, async () => {
       console.log(`Server running on port ${PORT}`);

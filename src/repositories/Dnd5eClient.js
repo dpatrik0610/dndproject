@@ -39,9 +39,7 @@ class Dnd5eClient {
     const URI = `${this.baseURL}${path}`;
     try {
       const response = await axios.get(URI);
-      
-      console.log("Response's Data from dnd5eClient: ", response.data)
-      return response.data;
+      return response.data.results;
     } 
     catch (err) {
       console.error(`Couldn't fetch data from: ${URI} - ${err.message}`);
