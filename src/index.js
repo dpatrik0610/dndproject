@@ -2,7 +2,7 @@ require('dotenv').config({ path: './.env' });
 const express = require('express');
 
 // Database
-const { connectDB, getDB } = require('./config/database');
+const { connectDB, getDB, closeDB } = require('./config/database');
 
 // Routes
 const ping = require('./routes/Ping');
