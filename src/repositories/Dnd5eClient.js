@@ -29,8 +29,8 @@ class Dnd5eClient {
   getRaces = (id = null) => this.getData(`/api/races${id ? `/${id}` : ''}`);
   getRuleSections = (id = null) => this.getData(`/api/rule-sections${id ? `/${id}` : ''}`);
   getRules = (id = null) => this.getData(`/api/rules${id ? `/${id}` : ''}`);
-  getSkills = (skill = null) => this.getData(`/api/skills${skill ? `/${skill}` : ''}`);
-  getSpells = (spell = null) => this.getData(`/api/spells${spell ? `/${spell}` : ''}`);
+  getSkills = (id = null) => this.getData(`/api/skills${id ? `/${id}` : ''}`);
+  getSpells = (id = null) => this.getData(`/api/spells${id ? `/${id}` : ''}`);
   getSubclasses = (id = null) => this.getData(`/api/subclasses${id ? `/${id}` : ''}`);
   getSubraces = (id = null) => this.getData(`/api/subraces${id ? `/${id}` : ''}`);
   getTraits = (id = null) => this.getData(`/api/traits${id ? `/${id}` : ''}`);
