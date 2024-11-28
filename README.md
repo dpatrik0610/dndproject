@@ -7,6 +7,12 @@ A Node.js project for managing and interacting with Dungeons & Dragons 5e data. 
 - **Custom Functions**: Includes custom logic and functions tailored for specific use cases beyond just interacting with the API.
 - **Caching**: Automatic caching of API responses to improve performance and reduce redundant requests.
 
+## TODO Features:
+- Custom Spell Generator
+- Custom Item Generator
+- Helping functions for Dungeon Master's
+- Frontend page
+
 ## Installation
 1. Clone the repository: 
 ```bash
