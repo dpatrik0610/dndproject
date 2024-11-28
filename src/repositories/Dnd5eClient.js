@@ -8,33 +8,32 @@ class Dnd5eClient {
     if (!this.baseURL) {
       throw new Error("Base URL for DnD 5e API not found. Please set DND_5E_URL in the .env file.");
     }
+
+    // Dynamically create methods for each API path
+    this.resources = [
+      "ability-scores", "alignments", "backgrounds", "classes", "conditions",
+      "damage-types", "equipment", "equipment-categories", "feats", "features",
+      "languages", "magic-items", "magic-schools", "monsters", "proficiencies",
+      "races", "rule-sections", "rules", "skills", "spells", "subclasses",
+      "subraces", "traits", "weapon-properties"
+    ];
+
+    // This generates class methods dynamically, because dnd5eAPI has many base endpoints.
+    this.resources.forEach(resource => {
+      const methodName = `get${this.capitalize(resource)}`;
+    
+      this[methodName] = (id = null) => {
+        const path = `/api/${resource}${id ? `/${id}` : ''}`;
+        
+        return this.getData(path);
+      };
+    });
   }
 
   getBasePaths = () => this.getData("/api");
-  getAbilityScores = (id = null) => this.getData(`/api/ability-scores${id ? `/${id}` : ''}`);
-  getAlignments = (id = null) => this.getData(`/api/alignments${id ? `/${id}` : ''}`);
-  getBackgrounds = (id = null) => this.getData(`/api/backgrounds${id ? `/${id}` : ''}`);
-  getClasses = (id = null) => this.getData(`/api/classes${id ? `/${id}` : ''}`);
-  getConditions = (id = null) => this.getData(`/api/conditions${id ? `/${id}` : ''}`);
-  getDamageTypes = (id = null) => this.getData(`/api/damage-types${id ? `/${id}` : ''}`);
-  getEquipment = (id = null) => this.getData(`/api/equipment${id ? `/${id}` : ''}`);
-  getEquipmentCategories = (id = null) => this.getData(`/api/equipment-categories${id ? `/${id}` : ''}`);
-  getFeats = (id = null) => this.getData(`/api/feats${id ? `/${id}` : ''}`);
-  getFeatures = (id = null) => this.getData(`/api/features${id ? `/${id}` : ''}`);
-  getLanguages = (id = null) => this.getData(`/api/languages${id ? `/${id}` : ''}`);
-  getMagicItems = (id = null) => this.getData(`/api/magic-items${id ? `/${id}` : ''}`);
-  getMagicSchools = (id = null) => this.getData(`/api/magic-schools${id ? `/${id}` : ''}`);
-  getMonsters = (id = null) => this.getData(`/api/monsters${id ? `/${id}` : ''}`);
-  getProficiencies = (id = null) => this.getData(`/api/proficiencies${id ? `/${id}` : ''}`);
-  getRaces = (id = null) => this.getData(`/api/races${id ? `/${id}` : ''}`);
-  getRuleSections = (id = null) => this.getData(`/api/rule-sections${id ? `/${id}` : ''}`);
-  getRules = (id = null) => this.getData(`/api/rules${id ? `/${id}` : ''}`);
-  getSkills = (id = null) => this.getData(`/api/skills${id ? `/${id}` : ''}`);
-  getSpells = (id = null) => this.getData(`/api/spells${id ? `/${id}` : ''}`);
-  getSubclasses = (id = null) => this.getData(`/api/subclasses${id ? `/${id}` : ''}`);
-  getSubraces = (id = null) => this.getData(`/api/subraces${id ? `/${id}` : ''}`);
-  getTraits = (id = null) => this.getData(`/api/traits${id ? `/${id}` : ''}`);
-  getWeaponProperties = (id = null) => this.getData(`/api/weapon-properties${id ? `/${id}` : ''}`);
+
+  // Helper to capitalize resource names (for method naming consistency)
+  capitalize = (str) => str.replace(/(?:^|-)(\w)/g, (_, c) => c.toUpperCase());
 
   async getData(path) {
     if (cache.has(path)) {
