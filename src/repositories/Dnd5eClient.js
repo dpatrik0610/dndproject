@@ -1,4 +1,27 @@
 const axios = require('axios');
+
+class Cache {
+  constructor(expiryTime= 60*60*1000 /*1 hour*/){
+    this.cache = new Map();
+    this.expiryTime = expiryTime;
+  }
+
+  get(path){
+    const cacheEntry = this.cache.get(path);
+    const currentTime = Date.now();
+
+    if (cacheEntry && (currentTime - cacheEntry.timestamp < this.expiryTime)) {
+      return cacheEntry.data;
+    }
+
+    return null;
+  }
+
+  set(path, data){
+    const timestamp = Date.now();
+    this.cache.set(path, {data, timestamp});
+  }
+}
 const cache = new Map();
 
 class Dnd5eClient {
