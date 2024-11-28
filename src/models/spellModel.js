@@ -69,7 +69,6 @@ class Spell {
       return [...this.desc, ...this.higher_level].join(' ');
     }
   
-    // Display basic spell info
     getSpellInfo() {
         return {
           index: this.index,
