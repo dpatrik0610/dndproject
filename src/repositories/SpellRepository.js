@@ -1,6 +1,6 @@
 class SpellRepository {
     constructor(db) {
-      this.collection = db.collection('spells');
+      this.collection = db.collection('Spells');
     }
   
     async getAll() {
@@ -8,20 +8,20 @@ class SpellRepository {
     }
     
     async getByIndex(spellIndex) {
-      return await this.db.findOne({ index: spellIndex });
+      return await this.collection.findOne({ index: spellIndex });
     }
   
     async create(spellData) {
       const result = await this.collection.insertOne(spellData);
-      return result.ops[0];
+      return { _id: result.insertedId, ...spellData };
     }
 
     async deleteOne(spellIndex) {
-      return await this.db.deleteOne({ index: spellIndex });
+      return await this.collection.deleteOne({ index: spellIndex });
     }
 
-    async updateOne(spellIndex, updatedData) {
-      return await this.db.updateOne(
+    async updateSpell(spellIndex, updatedData) {
+      return await this.collection.updateOne(
         { index: spellIndex },
         { $set: updatedData }
       );
