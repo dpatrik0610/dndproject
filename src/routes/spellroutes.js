@@ -22,6 +22,7 @@ module.exports = (db) => {
 
     router.get('/', (req, res) => spellController.getAll(req, res));
     router.get('/customspells', (req, res) => spellController.getAllCustom(req, res));
+    router.get('/count', (req, res) => spellController.countSpells(req, res));
     router.get('/:index', (req, res) => spellController.getByIndex(req, res));
 
     router.post('/create', validateRequest(spellValidator), (req, res) => spellController.create(req, res));

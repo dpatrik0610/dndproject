@@ -75,6 +75,12 @@ class SpellController {
         res.status(400).json({ error: err.message });
       }
     }
+
+    async countSpells(req, res){
+      const count = (await this.spellService.getAllSpells()).length;
+      console.log(count);
+      return res.status(200).json({"Count" : count});
+    }
     
   }
   

@@ -11,10 +11,10 @@ class SpellRepository {
       const result = await this.collection.find({}, {
         projection: {
           _id: 0,
-          index: 1, 
-          name: 1, 
-          level: 1, 
-          url: 1 
+          index: 1,
+          name: 1,
+          level: 1,
+          url: 1
         }
       }).toArray();
   

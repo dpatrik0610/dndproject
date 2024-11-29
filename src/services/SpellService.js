@@ -31,6 +31,7 @@ class SpellService {
   
   // Returns both custom and original spells
   async getAllSpells() {
+
     const originalSpells = this.getOriginalSpells();
     const customSpells = await this.getCustomSpells();
     return [...originalSpells, ...customSpells];
