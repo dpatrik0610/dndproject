@@ -77,248 +77,207 @@ class Player {
     this.familiar = familiar;
     this.proficiencyBonus = proficiencyBonus;
     this.reputation = reputation;
-  }
 
-  addCondition(condition) {
-    try {
-      if (typeof condition !== 'string' || condition.trim() === "") {
-        throw new Error("Condition must be a non-empty string");
+
+    // Constructor validation
+    if (typeof name !== "string" || name.trim() === "") {
+      throw new Error("Name must be a non-empty string");
+    }
+
+    if (typeof age !== "number" || age < 0 || age > 150) {
+      throw new Error("Age must be a number between 0 and 150");
+    }
+
+    if (typeof height !== "string" || height.trim() === "") {
+      throw new Error("Height must be a non-empty string");
+    }
+
+    if (typeof weight !== "string" || weight.trim() === "") {
+      throw new Error("Weight must be a non-empty string");
+    }
+
+    if (typeof race !== "string" || race.trim() === "") {
+      throw new Error("Race must be a non-empty string");
+    }
+
+    if (abilityScores) {
+      Object.keys(abilityScores).forEach((key) => {
+        if (!["str", "dex", "con", "int", "wis", "cha"].includes(key)) {
+          throw new Error(`Invalid ability score: ${key}`);
+        }
+        if (typeof abilityScores[key] !== "number" || abilityScores[key] < 1 || abilityScores[key] > 20) {
+          throw new Error("Ability scores must be between 1 and 20");
+        }
+      });
+    }
+
+    if (typeof hp !== "number" || hp < 0) {
+      throw new Error("HP must be a number greater than or equal to 0");
+    }
+
+    if (typeof speed !== "number" || speed <= 0) {
+      throw new Error("Speed must be a positive number");
+    }
+
+    if (typeof proficiencyBonus !== "number" || proficiencyBonus <= 0) {
+      throw new Error("Proficiency bonus must be a positive number");
+    }
+
+    if (deathSaves) {
+      if (typeof deathSaves.successes !== "number" || deathSaves.successes < 0 || deathSaves.successes > 3) {
+        throw new Error("Death save successes must be a number between 0 and 3");
       }
-      if (!this.conditions.includes(condition)) {
-        this.conditions.push(condition);
+      
+      if (typeof deathSaves.failures !== "number" || deathSaves.failures < 0 || deathSaves.failures > 3) {
+        throw new Error("Death save failures must be a number between 0 and 3");
       }
-    } catch (error) {
-      console.error(`Error adding condition: ${error.message}`);
     }
   }
 
-  updateHp(amount) {
-    try {
-      if (typeof amount !== 'number') {
-        throw new Error("Amount to update HP must be a number");
-      }
-      if (amount < -this.hp) {
-        throw new Error("Cannot reduce HP below zero");
-      }
-      this.hp = Math.max(0, this.hp + amount);
-    } catch (error) {
-      console.error(`Error updating HP: ${error.message}`);
-    }
-  }
+  // Core Methods
 
-  addProficiency(proficiency) {
-    try {
-      if (typeof proficiency !== 'string' || proficiency.trim() === "") {
-        throw new Error("Proficiency must be a non-empty string");
-      }
-      if (!this.proficiencies.includes(proficiency)) {
-        this.proficiencies.push(proficiency);
-      }
-    } catch (error) {
-      console.error(`Error adding proficiency: ${error.message}`);
-    }
-  }
-  
   setLevel(value) {
-    try {
-      if (value < 1 || value > 20) {
-        throw new Error("Level must be between 1 and 20");
-      }
-      this.level += value;
-      this.updateProficiencyBonus();
-    } catch (error) {
-      console.error(`Error setting new Level: ${error.message}`);
-    }
+    this._updateValue(value, "number", "Level must be between 1 and 20");
+    this.level += value;
+    this.updateProficiencyBonus();
   }
 
   updateProficiencyBonus() {
-    try {
-      this.proficiencyBonus = Math.floor(1 + this.level / 4);
-    } catch (error) {
-      console.error(`Error updating proficiency bonus: ${error.message}`);
-    }
+    this.proficiencyBonus = Math.floor(1 + this.level / 4);
   }
-  
+
   updateAbilityScore(ability, value) {
-    try {
-      if (!["str", "dex", "con", "int", "wis", "cha"].includes(ability)) {
-        throw new Error("Invalid ability score");
-      }
-      if (typeof value !== 'number' || value < -5 || value > 5) {
-        throw new Error("Ability score modifier must be between -5 and 5");
-      }
-      this.abilityScores[ability] = Math.max(1, this.abilityScores[ability] + value);
-    } catch (error) {
-      console.error(`Error updating ability score: ${error.message}`);
+    const validAbilities = ["str", "dex", "con", "int", "wis", "cha"];
+    if (!validAbilities.includes(ability)) {
+      throw new Error("Invalid ability score");
     }
+    this._updateValue(value, "number", "Ability score modifier must be between -5 and 5");
+    this.abilityScores[ability] = Math.max(1, this.abilityScores[ability] + value);
   }
 
-  addFeat(feat) {
-    try {
-      if (typeof feat !== 'string' || feat.trim() === "") {
-        throw new Error("Feat must be a non-empty string");
-      }
-      if (!this.feats.includes(feat)) {
-        this.feats.push(feat);
-      }
-    } catch (error) {
-      console.error(`Error adding feat: ${error.message}`);
-    }
+  updateHp(amount) {
+    this._updateValue(amount, "number", "Amount to update HP");
+    this.hp = Math.max(0, this.hp + amount);
   }
 
-  updateDeathSaves(successes = 0, failures = 0) {
-    try {
-      if (typeof successes !== 'number' || typeof failures !== 'number') {
-        throw new Error("Both successes and failures must be numbers");
-      }
-      this.deathSaves.successes = Math.min(3, this.deathSaves.successes + successes);
-      this.deathSaves.failures = Math.min(3, this.deathSaves.failures + failures);
-    } catch (error) {
-      console.error(`Error updating death saves: ${error.message}`);
-    }
+  toggleInspiration() {
+    this.inspiration = !this.inspiration;
   }
 
-  addEffect(effect) {
-    try {
-      if (typeof effect !== 'string' || effect.trim() === "") {
-        throw new Error("Effect must be a non-empty string");
-      }
-      if (!this.effects.includes(effect)) {
-        this.effects.push(effect);
-      }
-    } catch (error) {
-      console.error(`Error adding effect: ${error.message}`);
-    }
+  // Modifiers
+
+  addCondition(condition) {
+    this._addToArray(this.conditions, condition);
   }
 
   removeEffect(effect) {
-    try {
-      const index = this.effects.indexOf(effect);
-      if (index === -1) {
-        throw new Error("Effect not found");
-      }
-      this.effects.splice(index, 1);
-    } catch (error) {
-      console.error(`Error removing effect: ${error.message}`);
-    }
+    this._removeFromArray(this.effects, effect);
+  }
+
+  addProficiency(proficiency) {
+    this._addToArray(this.proficiencies, proficiency);
+  }
+
+  addFeat(feat) {
+    this._addToArray(this.feats, feat);
+  }
+
+  addEffect(effect) {
+    this._addToArray(this.effects, effect);
   }
 
   addLanguage(language) {
-    try {
-      if (typeof language !== 'string' || language.trim() === "") {
-        throw new Error("Language must be a non-empty string");
-      }
-      if (!this.knownLanguages.includes(language)) {
-        this.knownLanguages.push(language);
-      }
-    } catch (error) {
-      console.error(`Error adding language: ${error.message}`);
-    }
+    this._addToArray(this.knownLanguages, language);
   }
 
   removeLanguage(language) {
-  try {
-      const index = this.knownLanguages.indexOf(language);
-      if (index === -1) {
-        throw new Error("Language not found");
-      }
-      this.knownLanguages.splice(index, 1);
-    } catch (error) {
-      console.error(`Error removing language: ${error.message}`);
-    }
+    this._removeFromArray(this.knownLanguages, language);
   }
-  
+
   updateSpeed(speedModifier) {
-  try {
-    if (typeof speedModifier !== 'number') {
-      throw new Error("Speed modifier must be a number");
-    }
+    this._updateValue(speedModifier, "number", "Speed modifier must be a number");
     this.speed += speedModifier;
-  } catch (error) {
-    console.error(`Error updating speed: ${error.message}`);
   }
-}
 
-toggleInspiration() {
-  this.inspiration = !this.inspiration;
-}
-
-addResistance(damageType) {
-  try {
-    if (typeof damageType !== 'string' || damageType.trim() === "") {
-      throw new Error("Damage type must be a non-empty string");
-    }
-    if (!this.resistances.includes(damageType)) {
-      this.resistances.push(damageType);
-    }
-  } catch (error) {
-    console.error(`Error adding resistance: ${error.message}`);
+  addResistance(damageType) {
+    this._addToArray(this.resistances, damageType);
   }
-}
 
-removeResistance(damageType) {
-  try {
-    const index = this.resistances.indexOf(damageType);
-    if (index === -1) {
-      throw new Error("Resistance not found");
-    }
-    this.resistances.splice(index, 1);
-  } catch (error) {
-    console.error(`Error removing resistance: ${error.message}`);
+  removeResistance(damageType) {
+    this._removeFromArray(this.resistances, damageType);
   }
-}
 
-addImmunity(damageType) {
-  try {
-    if (typeof damageType !== 'string' || damageType.trim() === "") {
-      throw new Error("Damage type must be a non-empty string");
-    }
-    if (!this.immunities.includes(damageType)) {
-      this.immunities.push(damageType);
-    }
-  } catch (error) {
-    console.error(`Error adding immunity: ${error.message}`);
+  addImmunity(damageType) {
+    this._addToArray(this.immunities, damageType);
   }
-}
 
-removeImmunity(damageType) {
-  try {
-    const index = this.immunities.indexOf(damageType);
-    if (index === -1) {
-      throw new Error("Immunity not found");
-    }
-    this.immunities.splice(index, 1);
-  } catch (error) {
-    console.error(`Error removing immunity: ${error.message}`);
+  removeImmunity(damageType) {
+    this._removeFromArray(this.immunities, damageType);
   }
-}
 
-addVulnerability(damageType) {
-  try {
-    if (typeof damageType !== 'string' || damageType.trim() === "") {
-      throw new Error("Damage type must be a non-empty string");
-    }
-    if (!this.vulnerabilities.includes(damageType)) {
-      this.vulnerabilities.push(damageType);
-    }
-  } catch (error) {
-    console.error(`Error adding vulnerability: ${error.message}`);
+  addVulnerability(damageType) {
+    this._addToArray(this.vulnerabilities, damageType);
   }
-}
 
-removeVulnerability(damageType) {
-  try {
-    const index = this.vulnerabilities.indexOf(damageType);
-    if (index === -1) {
-      throw new Error("Vulnerability not found");
-    }
-    this.vulnerabilities.splice(index, 1);
-  } catch (error) {
-    console.error(`Error removing vulnerability: ${error.message}`);
+  removeVulnerability(damageType) {
+    this._removeFromArray(this.vulnerabilities, damageType);
   }
-}
 
+  updateDeathSaves(successes = 0, failures = 0) {
+    this._updateValue(successes, "number", "Successes must be numbers");
+    this._updateValue(failures, "number", "Failures must be numbers");
+    this.deathSaves.successes = Math.min(3, this.deathSaves.successes + successes);
+    this.deathSaves.failures = Math.min(3, this.deathSaves.failures + failures);
+  }
 
+  // Helper Methods
+  
+  /**
+   * Adds a value to an array if it is not already present.
+   * @param {Array} array - The array to add the value to.
+   * @param {string} value - The value to add.
+   */
+  _addToArray(array, value) {
+    try {
+      if (typeof value !== 'string' || value.trim() === "") {
+        throw new Error("Value must be a non-empty string");
+      }
+      if (!array.includes(value)) {
+        array.push(value);
+      }
+    } catch (error) {
+      console.error(`Error adding value: ${error.message}`);
+    }
+  }
+
+  /**
+   * Removes a value from an array.
+   * @param {Array} array - The array to remove the value from.
+   * @param {string} value - The value to remove.
+   */
+  _removeFromArray(array, value) {
+    try {
+      const index = array.indexOf(value);
+      if (index === -1) {
+        throw new Error("Value not found");
+      }
+      array.splice(index, 1);
+    } catch (error) {
+      console.error(`Error removing value: ${error.message}`);
+    }
+  }
+
+  /**
+   * Updates a value if it matches the specified type.
+   * @param {any} value - The value to update.
+   * @param {string} type - The expected type of the value.
+   * @param {string} errorMessage - The error message if validation fails.
+   */
+  _updateValue(value, type, errorMessage) {
+    if (typeof value !== type) {
+      throw new Error(errorMessage);
+    }
+  }
 }
 
 module.exports = Player;
