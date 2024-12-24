@@ -1,14 +1,14 @@
 class SpellRepository {
-    constructor(db) {
-      this.collection = db.collection('Spells');
+    constructor(spellCollection) {
+      this.spellCollection = spellCollection;
     }
   
     async getAll() {
-      return this.collection.find().toArray();
+      return this.spellCollection.find().toArray();
     }
     
     async getAllShort() {
-      const result = await this.collection.find({}, {
+      const result = await this.spellCollection.find({}, {
         projection: {
           _id: 0,
           index: 1, 
@@ -22,20 +22,20 @@ class SpellRepository {
     }
 
     async getByIndex(spellIndex) {
-      return await this.collection.findOne({ index: spellIndex });
+      return await this.spellCollection.findOne({ index: spellIndex });
     }
   
     async create(spellData) {
-      const result = await this.collection.insertOne(spellData);
+      const result = await this.spellCollection.insertOne(spellData);
       return { _id: result.insertedId, ...spellData };
     }
 
     async deleteOne(spellIndex) {
-      return await this.collection.deleteOne({ index: spellIndex });
+      return await this.spellCollection.deleteOne({ index: spellIndex });
     }
 
     async updateSpell(spellIndex, updatedData) {
-      return await this.collection.updateOne(
+      return await this.spellCollection.updateOne(
         { index: spellIndex },
         { $set: updatedData }
       );

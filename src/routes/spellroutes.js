@@ -12,7 +12,7 @@ module.exports = (db) => {
     const router = express.Router();
     // Repositories
     const dnd5eClient = new Dnd5eClient();
-    const spellRepository = new SpellRepository(db);
+    const spellRepository = new SpellRepository(db.collection('Spells'));
 
     // Services
     const spellService = new SpellService(spellRepository, dnd5eClient);
