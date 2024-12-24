@@ -6,7 +6,7 @@ const PlayerRepository = require('../repositories/PlayerRepository');
 module.exports = (db) => {
   const router = express.Router();
 
-  const playerRepository = new PlayerRepository(db);
+  const playerRepository = new PlayerRepository(db.collection("Players"));
   const playerService = new PlayerService(playerRepository);
   const playerController = new PlayerController(playerService);
 
