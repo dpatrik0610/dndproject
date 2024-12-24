@@ -164,6 +164,107 @@ class Player {
     this.inspiration = !this.inspiration;
   }
 
+  addClass(newClass) {
+    if (typeof newClass !== "string" || newClass.trim() === "") {
+      throw new Error("Class must be a non-empty string");
+    }
+    if (!this.classes.includes(newClass)) {
+      this.classes.push(newClass);
+    } else {
+      console.warn(`${newClass} is already a class for this player.`);
+    }
+  }
+
+removeClass(classToRemove) {
+    const index = this.classes.indexOf(classToRemove);
+    if (index !== -1) {
+      this.classes.splice(index, 1);
+    } else {
+      throw new Error(`${classToRemove} is not a class for this player.`);
+    }
+  }
+
+  addSubclass(subclass) {
+    if (typeof subclass !== "string" || subclass.trim() === "") {
+      throw new Error("Subclass must be a non-empty string");
+    }
+    if (!this.subclasses.includes(subclass)) {
+      this.subclasses.push(subclass);
+    }
+  }
+
+  removeSubclass(subclass) {
+    const index = this.subclasses.indexOf(subclass);
+    if (index !== -1) {
+      this.subclasses.splice(index, 1);
+    } else {
+      throw new Error(`${subclass} is not a subclass for this player.`);
+    }
+  }
+
+  getClassDetails() {
+    return {
+      classes: [...this.classes],
+      subclasses: [...this.subclasses],
+    };
+  }
+
+  addTrait(trait) {
+    if (typeof trait !== "string" || trait.trim() === "") {
+      throw new Error("Trait must be a non-empty string");
+    }
+    if (!this.traits.includes(trait)) {
+      this.traits.push(trait);
+    }
+  }
+
+  removeTrait(trait) {
+    const index = this.traits.indexOf(trait);
+    if (index !== -1) {
+      this.traits.splice(index, 1);
+    } else {
+      throw new Error(`${trait} is not in the traits list.`);
+    }
+  }
+
+  hasTrait(trait) {
+    return this.traits.includes(trait);
+  }
+
+  learnSpell(spell) {
+    if (typeof spell !== "string" || spell.trim() === "") {
+      throw new Error("Spell must be a non-empty string");
+    }
+    if (!this.knownSpells.includes(spell)) {
+      this.knownSpells.push(spell);
+    }
+  }
+
+  forgetSpell(spell) {
+    const index = this.knownSpells.indexOf(spell);
+    if (index !== -1) {
+      this.knownSpells.splice(index, 1);
+    } else {
+      throw new Error(`${spell} is not in the known spells list.`);
+    }
+  }
+
+  knowsSpell(spell) {
+    return this.knownSpells.includes(spell);
+  }
+
+  adjustReputation(amount) {
+    if (typeof amount !== "number") {
+      throw new Error("Amount must be a number");
+    }
+    this.reputation += amount;
+  }
+
+  hasReputation(threshold) {
+    return this.reputation >= threshold;
+  }
+
+
   // Modifiers
 
   addCondition(condition) {
@@ -278,6 +379,57 @@ class Player {
       throw new Error(errorMessage);
     }
   }
+
+  getSummary() {
+    return {
+      name: this.name,
+      age: this.age,
+      height: this.height,
+      weight: this.weight,
+      race: {
+        main: this.race,
+        subrace: this.subrace || null,
+      },
+      background: this.background,
+      alignment: this.alignment,
+      classes: {
+        main: this.classes,
+        subclasses: this.subclasses,
+      },
+      abilityScores: { ...this.abilityScores },
+      savingThrows: { ...this.savingThrows },
+      skills: { ...this.skills },
+      knownLanguages: [...this.knownLanguages],
+      proficiencies: [...this.proficiencies],
+      traits: [...this.traits],
+      conditions: [...this.conditions],
+      inventory: [...this.inventory],
+      currency: { ...this.currency },
+      combat: {
+        hp: this.hp,
+        tempHp: this.tempHp,
+        ac: this.ac,
+        speed: this.speed,
+        hitDice: this.hitDice,
+        initBonus: this.initBonus,
+      },
+      spells: {
+        spellSlots: { ...this.spellSlots },
+        knownSpells: [...this.knownSpells],
+      },
+      inspiration: this.inspiration,
+      passivePerception: this.passivePerception,
+      effects: [...this.effects],
+      resistances: [...this.resistances],
+      immunities: [...this.immunities],
+      vulnerabilities: [...this.vulnerabilities],
+      deathSaves: { ...this.deathSaves },
+      familiar: this.familiar,
+      proficiencyBonus: this.proficiencyBonus,
+      reputation: this.reputation,
+    };
+  }
+  
 }
 
 module.exports = Player;
