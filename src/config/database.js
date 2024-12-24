@@ -6,7 +6,7 @@ let clientInstance = null;
 // Connect to the database
 const connectDB = async () => {
   const mongoUri = process.env.MONGO_URI;
-  const dbName = process.env.DB_NAME;
+  const dbName = process.env.DB_NAME || "dndproject";
 
   // Check for missing environment variables
   if (!mongoUri || !dbName) {
@@ -15,8 +15,8 @@ const connectDB = async () => {
   }
 
   try {
-    clientInstance = new MongoClient(mongoUri);
-
+    clientInstance = new MongoClient(mongoUri, { connectTimeoutMS: 10000 });
+    
     clientInstance.on('commandStarted', event => {
       console.log('MongoDB command started:', event);
     });
