@@ -26,10 +26,17 @@ connectDB()
     app.use('/api/ping', ping());
     app.use('/api/spells', spellRoutes(db));
     app.use('/api/players', playerRoutes(db));
-    app.use('/api/info', () => {
-      logEndpoints(app);
-      logCollections(db);
+    app.get('/api/info', (req, res) => {
+      const endpoints = logEndpoints(app);
+      logTemplates.info("Request made to /api/info");
+    
+      res.json({
+        message: "Available API Endpoints",
+        endpoints,
+      });
     });
+    
+    logCollections(db);
     app.listen(PORT, async () => {
       logTemplates.success(`Server running on port ${PORT}`);
     });

@@ -12,7 +12,7 @@ const logTemplates = {
     console.log(chalk.yellow.bold(`⚠️ [WARNING] ${message}`)),
 
   info: (message) =>
-    console.log(chalk.blue(`ℹ️ [INFO] ${message}`)),
+    console.log(chalk.blue(`[INFO] ${message}`)),
 
   critical: (message) =>
     console.log(chalk.bgRed.white.bold(`🚨 [CRITICAL] ${message}`)),

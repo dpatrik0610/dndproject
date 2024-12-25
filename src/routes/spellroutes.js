@@ -20,7 +20,7 @@ module.exports = (db) => {
         const spellService = new SpellService(spellRepository, dnd5eClient);
         
         // Controller
-        const spellController = new SpellController(spellService);
+        const spellController = new SpellController(spellService, logTemplates);
         
         router.get('/', (req, res) => spellController.getAll(req, res));
         router.get('/customspells', (req, res) => spellController.getAllCustom(req, res));

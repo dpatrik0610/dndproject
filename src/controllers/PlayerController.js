@@ -1,6 +1,7 @@
 class PlayerController {
-  constructor(playerService) {
+  constructor(playerService, logger) {
     this.playerService = playerService;
+    this.logger = logger;
   }
 
   async getAllPlayers(req, res) {
@@ -8,7 +9,7 @@ class PlayerController {
       const players = await this.playerService.getPlayers();
       res.status(200).json(players);
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -23,7 +24,7 @@ class PlayerController {
 
       res.status(200).json(player);
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -36,7 +37,7 @@ class PlayerController {
       const result = await this.playerService.createPlayer(playerData);
       res.status(201).json({ message: result });
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -53,7 +54,7 @@ class PlayerController {
       const result = await this.playerService.updatePlayer(playerId, playerData);
       res.status(200).json({ message: result });
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -66,7 +67,7 @@ class PlayerController {
       const result = await this.playerService.deletePlayer(playerId);
       res.status(200).json({ message: result });
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -85,7 +86,7 @@ class PlayerController {
       const message = await this.playerService.addCurrency(playerId, currencyType, amount);
       res.status(200).json({ message });
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -102,7 +103,7 @@ class PlayerController {
       const message = await this.playerService.removeCurrency(playerId, currencyType, amount);
       res.status(200).json({ message });
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -119,7 +120,7 @@ class PlayerController {
       const message = await this.playerService.transferCurrency(fromPlayerId, toPlayerId, currencyType, amount);
       res.status(200).json({ message });
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       res.status(500).json({ error: err.message });
     }
   }
@@ -135,11 +136,10 @@ class PlayerController {
       const totalCurrency = await this.playerService.getTotalCurrency(playerId);
       return res.status(200).json({ playerId, totalCurrency });
     } catch (err) {
-      console.error(err);
+      this.logger.error(err);
       return res.status(500).json({ error: "Failed to get player's total currency." });
     }
   }
-  
 }
 
 module.exports = PlayerController;

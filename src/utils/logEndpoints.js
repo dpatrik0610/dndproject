@@ -1,15 +1,15 @@
 const listEndpoints = require('express-list-endpoints');
-const { logTemplates } = require('../utils/logTemplates');
 
 const logEndpoints = (app) => {
   const routes = listEndpoints(app);
-
-  logTemplates.info("Available endpoints:");
+  const endpointList = [];
 
   routes.forEach((route) => {
     const methods = route.methods.join(', ');
-    logTemplates.info(`${route.path} [${methods}]`);
+    endpointList.push(`${route.path} [${methods}]`);
   });
+
+  return endpointList;
 };
 
 module.exports = logEndpoints;

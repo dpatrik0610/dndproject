@@ -11,7 +11,7 @@ module.exports = (db) => {
     const playerRepository = new PlayerRepository(db.collection('Players'));
     const currencyManager = new CurrencyManager();
     const playerService = new PlayerService(playerRepository, currencyManager);
-    const playerController = new PlayerController(playerService);
+    const playerController = new PlayerController(playerService, logTemplates);
 
     router.get('/players', (req, res) => playerController.getPlayers(req, res));
     router.get('/player/:playerId', (req, res) => playerController.getPlayerById(req, res));
