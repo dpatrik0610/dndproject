@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 class PlayerRepository {
   constructor(playerCollection) {
     this.collection = playerCollection;
@@ -8,7 +9,11 @@ class PlayerRepository {
   }
 
   async getById(playerId) {
-    return await this.collection.findOne({ _id: playerId });
+    try{
+      return await this.collection.findOne({ _id: new ObjectId(playerId) });
+    } catch (err) {
+      throw new Error(`Couldn't get player by their _id: ${err}`);
+    }
   }
 
   async create(playerData) {
@@ -17,12 +22,12 @@ class PlayerRepository {
   }
 
   async deleteOne(playerId) {
-    return await this.collection.deleteOne({ _id: playerId });
+    return await this.collection.deleteOne({ _id: new ObjectId(playerId) });
   }
 
   async updatePlayer(playerId, updatedData) {
     return await this.collection.updateOne(
-      { _id: playerId },
+      { _id: new ObjectId(playerId) },
       { $set: updatedData }
     );
   }

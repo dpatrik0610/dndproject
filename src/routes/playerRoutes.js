@@ -3,6 +3,9 @@ const PlayerController = require('../controllers/PlayerController');
 const PlayerService = require('../services/PlayerService');
 const PlayerRepository = require('../repositories/PlayerRepository');
 const CurrencyManager = require('../models/Player/PlayerCurrencyManager');
+
+const validateRequest = require('../middlewares/ValidateRequest');
+const playerValidator = require('../validators/playerValidator');
 const { logTemplates } = require('../utils/logTemplates');
 
 module.exports = (db) => {
@@ -13,10 +16,10 @@ module.exports = (db) => {
     const playerService = new PlayerService(playerRepository, currencyManager);
     const playerController = new PlayerController(playerService, logTemplates);
 
-    router.get('/', (req, res) => playerController.getPlayers(req, res));
+    router.get('/', (req, res) => playerController.getAllPlayers(req, res));
     router.get('/:playerId', (req, res) => playerController.getPlayerById(req, res));
-    router.post('/create', (req, res) => playerController.createPlayer(req, res));
-    router.put('/:playerId', (req, res) => playerController.updatePlayer(req, res));
+    router.post('/create', validateRequest(playerValidator), (req, res) => playerController.createPlayer(req, res));
+    router.put('/:playerId',validateRequest(playerValidator), (req, res) => playerController.updatePlayer(req, res));
     router.delete('/:playerId', (req, res) => playerController.deletePlayer(req, res));
     router.get('/currency/:playerId/', (req, res) => playerController.getTotalCurrency(req, res));
     router.post('/currency/:playerId/', (req, res) => playerController.addCurrency(req, res));
