@@ -23,8 +23,6 @@ connectDB()
   .then(() => {
     const db = getDB();
 
-    logTemplates.info('Database connection established successfully.');
-
     app.use('/api/ping', ping());
     app.use('/api/spells', spellRoutes(db));
     app.use('/api/players', playerRoutes(db));

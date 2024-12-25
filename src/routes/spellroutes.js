@@ -7,7 +7,7 @@ const SpellController = require('../controllers/SpellController');
 
 const validateRequest = require('../middlewares/ValidateRequest');
 const spellValidator = require('../validators/SpellValidator');
-const { signaleTemplates } = require('../utils/logTemplates');
+const { logTemplates } = require('../utils/logTemplates');
 
 module.exports = (db) => {
     const router = express.Router();
@@ -31,9 +31,9 @@ module.exports = (db) => {
         router.put('/update/:index', (req, res) => spellController.update(req, res));
         router.delete('/delete/:index', (req, res) => spellController.delete(req, res));
         
-        signaleTemplates.task("Spell Module loaded.");
+        logTemplates.success("Spell Module loaded.");
     } catch (err) {
-        signaleTemplates.alert("Couldn't load Spell Module.", err.message);
+        logTemplates.warning("Couldn't load Spell Module.", err.message);
     }
 
     return router;

@@ -3,7 +3,7 @@ const PlayerController = require('../controllers/PlayerController');
 const PlayerService = require('../services/PlayerService');
 const PlayerRepository = require('../repositories/PlayerRepository');
 const CurrencyManager = require('../models/Player/PlayerCurrencyManager');
-const { signaleTemplates } = require('../utils/logTemplates');
+const { logTemplates } = require('../utils/logTemplates');
 
 module.exports = (db) => {
   const router = express.Router();
@@ -22,10 +22,10 @@ module.exports = (db) => {
     router.post('/player/:playerId/currency/add', (req, res) => playerController.addCurrency(req, res));
     router.delete('/player/:playerId/currency/remove', (req, res) => playerController.removeCurrency(req, res));
     router.post('/player/:playerId/currency/transfer', (req, res) => playerController.transferCurrency(req, res));
-
-    signaleTemplates.task('Player module loaded.');
+    
+    logTemplates.success('Player Module loaded.');
   } catch (err) {
-    signaleTemplates.alert('Error initializing Player Manager:', err.message);
+    logTemplates.error(`Error initializing Player Manager: ${err.message}`);
   }
 
   return router;
