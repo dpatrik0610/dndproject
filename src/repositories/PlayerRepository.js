@@ -4,7 +4,7 @@ class PlayerRepository {
   }
 
   async getAll() {
-    return this.collection.find().toArray();
+    return await this.collection.find().toArray();
   }
 
   async getById(playerId) {
