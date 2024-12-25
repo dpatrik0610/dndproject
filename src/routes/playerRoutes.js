@@ -13,15 +13,15 @@ module.exports = (db) => {
     const playerService = new PlayerService(playerRepository, currencyManager);
     const playerController = new PlayerController(playerService, logTemplates);
 
-    router.get('/players', (req, res) => playerController.getPlayers(req, res));
-    router.get('/player/:playerId', (req, res) => playerController.getPlayerById(req, res));
-    router.post('/player', (req, res) => playerController.createPlayer(req, res));
-    router.put('/player/:playerId', (req, res) => playerController.updatePlayer(req, res));
-    router.delete('/player/:playerId', (req, res) => playerController.deletePlayer(req, res));
-    router.get('/player/:playerId/currency', (req, res) => playerController.getTotalCurrency(req, res));
-    router.post('/player/:playerId/currency/add', (req, res) => playerController.addCurrency(req, res));
-    router.delete('/player/:playerId/currency/remove', (req, res) => playerController.removeCurrency(req, res));
-    router.post('/player/:playerId/currency/transfer', (req, res) => playerController.transferCurrency(req, res));
+    router.get('/', (req, res) => playerController.getPlayers(req, res));
+    router.get('/:playerId', (req, res) => playerController.getPlayerById(req, res));
+    router.post('/create', (req, res) => playerController.createPlayer(req, res));
+    router.put('/:playerId', (req, res) => playerController.updatePlayer(req, res));
+    router.delete('/:playerId', (req, res) => playerController.deletePlayer(req, res));
+    router.get('/currency/:playerId/', (req, res) => playerController.getTotalCurrency(req, res));
+    router.post('/currency/:playerId/', (req, res) => playerController.addCurrency(req, res));
+    router.delete('/currency/:playerId/', (req, res) => playerController.removeCurrency(req, res));
+    router.post('/currency/transfer/:playerId', (req, res) => playerController.transferCurrency(req, res));
     
     logTemplates.success('Player Module loaded.');
   } catch (err) {
