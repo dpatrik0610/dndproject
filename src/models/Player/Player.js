@@ -1,10 +1,7 @@
-const PlayerValidation = require("./PlayerValidation");
 const PlayerMethods = require("./PlayerMethods");
 
 class Player {
   constructor(args = {}) {
-    PlayerValidation.validateConstructor(args);
-
     Object.assign(this, {
       name: "Unknown Adventurer",
       age: 0,
