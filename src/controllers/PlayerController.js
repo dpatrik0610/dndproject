@@ -127,14 +127,19 @@ class PlayerController {
   async getTotalCurrency(req, res) {
     try {
       const { playerId } = req.params;
-
+  
+      if (!playerId) {
+        return res.status(400).json({ error: "Missing playerId parameter." });
+      }
+  
       const totalCurrency = await this.playerService.getTotalCurrency(playerId);
-      res.status(200).json({ totalCopper: totalCurrency });
+      return res.status(200).json({ playerId, totalCurrency });
     } catch (err) {
       console.error(err);
-      res.status(500).json({ error: err.message });
+      return res.status(500).json({ error: "Failed to get player's total currency." });
     }
   }
+  
 }
 
 module.exports = PlayerController;

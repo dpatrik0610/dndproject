@@ -55,8 +55,8 @@ class PlayerCurrencyManager {
 
   static getTotalCurrency(player) {
     const totalCopper = this.convertToCopper(player);
-    return totalCopper;
-  }
+    return this.splitCopper(totalCopper);
+  }  
 
   static normalizeCurrency(player) {
     const totalCopper = this.convertToCopper(player);
