@@ -110,8 +110,8 @@ class PlayerController {
 
   async transferCurrency(req, res) {
     try {
-      const { fromPlayerId, toPlayerId } = req.params;
-      const { currencyType, amount } = req.body;
+      const { fromPlayerId } = req.params;
+      const { toPlayerId, currencyType, amount } = req.body;
 
       if (!currencyType || typeof amount !== "number") {
         return res.status(400).json({ error: "Missing or invalid 'currencyType' or 'amount'." });
