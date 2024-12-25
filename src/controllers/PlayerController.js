@@ -70,6 +70,71 @@ class PlayerController {
       res.status(500).json({ error: err.message });
     }
   }
+
+  // Currency
+
+  async addCurrency(req, res) {
+    try {
+      const { playerId } = req.params;
+      const { currencyType, amount } = req.body;
+
+      if (!currencyType || typeof amount !== "number") {
+        return res.status(400).json({ error: "Missing or invalid 'currencyType' or 'amount'." });
+      }
+
+      const message = await this.playerService.addCurrency(playerId, currencyType, amount);
+      res.status(200).json({ message });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  async removeCurrency(req, res) {
+    try {
+      const { playerId } = req.params;
+      const { currencyType, amount } = req.body;
+
+      if (!currencyType || typeof amount !== "number") {
+        return res.status(400).json({ error: "Missing or invalid 'currencyType' or 'amount'." });
+      }
+
+      const message = await this.playerService.removeCurrency(playerId, currencyType, amount);
+      res.status(200).json({ message });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  async transferCurrency(req, res) {
+    try {
+      const { fromPlayerId, toPlayerId } = req.params;
+      const { currencyType, amount } = req.body;
+
+      if (!currencyType || typeof amount !== "number") {
+        return res.status(400).json({ error: "Missing or invalid 'currencyType' or 'amount'." });
+      }
+
+      const message = await this.playerService.transferCurrency(fromPlayerId, toPlayerId, currencyType, amount);
+      res.status(200).json({ message });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  }
+
+  async getTotalCurrency(req, res) {
+    try {
+      const { playerId } = req.params;
+
+      const totalCurrency = await this.playerService.getTotalCurrency(playerId);
+      res.status(200).json({ totalCopper: totalCurrency });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  }
 }
 
 module.exports = PlayerController;
