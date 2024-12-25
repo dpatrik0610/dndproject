@@ -9,7 +9,7 @@ const playerValidator = Joi.object({
   subrace: Joi.string().allow(null).optional(),
   background: Joi.string().default('Commoner').required(),
   alignment: Joi.string().default('Neutral').required(),
-  classes: Joi.array().items(Joi.string()).default([]).optional(),
+  classes: Joi.array().items(Joi.string()).default([]).required(),
   subclasses: Joi.array().items(Joi.string()).default([]).optional(),
   abilityScores: Joi.object({
     str: Joi.number().integer().min(1).default(10),
