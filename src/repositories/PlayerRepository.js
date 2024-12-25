@@ -1,6 +1,6 @@
 class PlayerRepository {
-  constructor(db) {
-    this.collection = db.collection('Players');
+  constructor(playerCollection) {
+    this.collection = playerCollection;
   }
 
   async getAll() {

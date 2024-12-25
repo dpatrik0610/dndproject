@@ -1,4 +1,5 @@
 const { MongoClient } = require('mongodb');
+const { logTemplates } = require('../utils/logTemplates');
 
 let dbInstance = null;
 let clientInstance = null;
@@ -10,33 +11,23 @@ const connectDB = async () => {
 
   // Check for missing environment variables
   if (!mongoUri || !dbName) {
-    console.error("MongoDB URI or DB_NAME is not defined. Check your .env file.");
+    logTemplates.error("MongoDB URI or DB_NAME is not defined. Check your .env file.");
     throw new Error("MONGO_URI or DB_NAME not found in environment variables.");
   }
 
   try {
-    clientInstance = new MongoClient(mongoUri, { connectTimeoutMS: 10000 });
-    
-    clientInstance.on('commandStarted', event => {
-      console.log('MongoDB command started:', event);
-    });
-
-    clientInstance.on('commandSucceeded', event => {
-      console.log('MongoDB command succeeded:', event);
-    });
-
-    clientInstance.on('commandFailed', event => {
-      console.log('MongoDB command failed:', event);
+    clientInstance = new MongoClient(mongoUri, {
+      autoSelectFamily: false,
     });
 
     // Connect to the MongoDB server
     await clientInstance.connect();
     dbInstance = clientInstance.db(dbName);
     
-    console.log(`Connected to MongoDB database: ${dbInstance.databaseName}`);
+    logTemplates.success(`Connected to MongoDB database: ${dbInstance.databaseName}`);
     return dbInstance;
   } catch (err) {
-    console.error("MongoDB connection error:", err.message);
+    logTemplates.error(`MongoDB connection error: ${err.message}`);
     throw err;
   }
 };
@@ -53,7 +44,7 @@ const getDB = () => {
 const closeDB = async () => {
   if (clientInstance) {
     await clientInstance.close();
-    console.log("MongoDB connection closed.");
+    logTemplates.info("MongoDB connection closed.");
   }
 };
 
@@ -62,21 +53,22 @@ const listCollections = async () => {
     const collections = await dbInstance.listCollections().toArray();
 
     return collections.map(col => col.name);
-    } catch (err) {
-    console.error('Error listing collections:', err);
+  } catch (err) {
+    logTemplates.error(`Error listing collections: ${err.message}`);
+    throw err;
   }
 };
 
-// Get collection's data by it's name.
+// Get collection's data by its name.
 const getCollection = async (collectionName) => {
-  try{
-    if( !(await checkCollectionExists(collectionName)) ) {
-      throw new Error(`Collection "${collectionName}" doesn't exist.`)
+  try {
+    if (!(await checkCollectionExists(collectionName))) {
+      throw new Error(`Collection "${collectionName}" doesn't exist.`);
     }
 
     return dbInstance.collection(collectionName);
   } catch (err) {
-    console.error("Collection error:", err.message);
+    logTemplates.error(`Collection error: ${err.message}`);
     throw err;  
   }
 }
@@ -88,7 +80,7 @@ const checkCollectionExists = async (collectionName) => {
 
     return collections.includes(collectionName);
   } catch (err) {
-    console.error("Error checking if collection exists:", err);
+    logTemplates.error(`Error checking if collection exists: ${err.message}`);
     throw err;
   }
 };

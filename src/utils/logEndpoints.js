@@ -1,14 +1,14 @@
 const listEndpoints = require('express-list-endpoints');
-const chalk = require('chalk');
+const { logTemplates } = require('../utils/logTemplates');
 
 const logEndpoints = (app) => {
   const routes = listEndpoints(app);
 
-  console.log("\nAvailable endpoints:\n");
+  logTemplates.info("Available endpoints:");
 
-  routes.forEach((route, index) => {
+  routes.forEach((route) => {
     const methods = route.methods.join(', ');
-    console.log(`  ${chalk.green(index + 1)}. ${chalk.blue(route.path)} [${chalk.yellow(methods)}]`);
+    logTemplates.info(`${route.path} [${methods}]`);
   });
 };
 
