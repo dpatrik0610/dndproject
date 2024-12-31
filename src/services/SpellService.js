@@ -10,7 +10,7 @@ class SpellService {
   async init() {
     try {
       this.originalSpells = await this.dnd5eClient.getSpells();
-      console.log("All DnD5e Spells Imported.");
+      //console.log("All DnD5e Spells Imported.");
     } catch (err) {
       console.error("Error loading spells:", err.message);
     }

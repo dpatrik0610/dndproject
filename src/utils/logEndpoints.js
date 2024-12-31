@@ -1,15 +1,13 @@
 const listEndpoints = require('express-list-endpoints');
-const chalk = require('chalk');
 
 const logEndpoints = (app) => {
   const routes = listEndpoints(app);
+  const endpointList = routes.map((route) => ({
+    path: route.path,
+    methods: route.methods.join(', '),
+  }));
 
-  console.log("\nAvailable endpoints:\n");
-
-  routes.forEach((route, index) => {
-    const methods = route.methods.join(', ');
-    console.log(`  ${chalk.green(index + 1)}. ${chalk.blue(route.path)} [${chalk.yellow(methods)}]`);
-  });
+  return endpointList;
 };
 
 module.exports = logEndpoints;

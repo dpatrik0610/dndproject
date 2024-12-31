@@ -1,8 +1,9 @@
-const {listCollections} = require("../config/database")
+const { listCollections } = require("../config/database");
+const { logTemplates } = require("./logTemplates");
 
 const logCollections = async (db) => {
     const collections = await listCollections(db);
-    console.log("\nAvailable collections:", collections);
+    logTemplates.info(`Available collections: ${collections.map(col => `[${col}]`).join(", ")}`);
 }
 
 module.exports = logCollections;

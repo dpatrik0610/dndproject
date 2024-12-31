@@ -6,12 +6,13 @@ const { connectDB, getDB, closeDB } = require('./config/database');
 
 // Routes
 const ping = require('./routes/Ping');
-const playerRoutes = require('./routes/PlayerRoutes');
-const spellRoutes = require('./routes/SpellRoutes');
+const spellRoutes = require('./routes/spellroutes');
+const playerRoutes = require('./routes/playerRoutes');
 
 // Utils
 const logEndpoints = require('./utils/logEndpoints');
 const logCollections = require('./utils/logCollections');
+const { logTemplates } = require('./utils/logTemplates');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -23,26 +24,37 @@ connectDB()
     const db = getDB();
 
     app.use('/api/ping', ping());
-    app.use('/api/players', playerRoutes(db));
     app.use('/api/spells', spellRoutes(db));
-
+    app.use('/api/players', playerRoutes(db));
+    app.get('/api/info', (req, res) => {
+      const endpoints = logEndpoints(app);
+      logTemplates.info("Request made to /api/info");
+    
+      res.json({
+        message: "Available API Endpoints",
+        endpoints,
+      });
+    });
+    
+    logCollections(db);
     app.listen(PORT, async () => {
-      console.log(`Server running on port ${PORT}`);
-
-      logEndpoints(app);
-      logCollections(db);
+      logTemplates.success(`Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Failed to start server:", err.message);
+    logTemplates.error(`Failed to connect to the database: ${err.message}`);
   });
 
-  process.on('SIGINT', async () => {
-    await closeDB();
-    process.exit(0);
-  });
-  
-  process.on('SIGTERM', async () => {
-    await closeDB();
-    process.exit(0);
-  });
+process.on('SIGINT', async () => {
+  logTemplates.warning('SIGINT signal received. Closing database connection...');
+  await closeDB();
+  logTemplates.info('Database connection closed. Exiting process.');
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  logTemplates.warning('SIGTERM signal received. Closing database connection...');
+  await closeDB();
+  logTemplates.info('Database connection closed. Exiting process.');
+  process.exit(0);
+});

@@ -6,12 +6,11 @@ module.exports = () => {
   router.get('/', (req, res) => {
     const start = Date.now();
 
-    res.send('Pong');
-
+    
     const end = Date.now();
     const responseTime = end - start;
-
-    console.log(`Response time for /ping: ${responseTime}ms`);
+    
+    res.json({message : 'Pong!', responseTime: responseTime});
   });
 
   return router;
