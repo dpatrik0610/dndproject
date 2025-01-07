@@ -1,8 +1,8 @@
-const PlayerHelpers = require("./PlayerHelpers");
+const HelperFunctions = require("../../utils/HelperFunctions");
 
-class PlayerMethods {
+class PlayerManager {
   static setLevel(player, value) {
-    PlayerHelpers.updateValue(value, "number", "Level must be between 1 and 20");
+    HelperFunctions.updateValue(value, "number", "Level must be between 1 and 20");
     player.level += value;
     PlayerMethods.updateProficiencyBonus(player);
   }
@@ -16,12 +16,12 @@ class PlayerMethods {
     if (!validAbilities.includes(ability)) {
       throw new Error("Invalid ability score");
     }
-    PlayerHelpers.updateValue(value, "number", "Ability score modifier must be between -5 and 5");
+    HelperFunctions.updateValue(value, "number", "Ability score modifier must be between -5 and 5");
     player.abilityScores[ability] = Math.max(1, player.abilityScores[ability] + value);
   }
 
   static updateHp(player, amount) {
-    PlayerHelpers.updateValue(amount, "number", "Amount to update HP");
+    HelperFunctions.updateValue(amount, "number", "Amount to update HP");
     player.hp = Math.max(0, player.hp + amount);
   }
 
@@ -145,70 +145,68 @@ class PlayerMethods {
   // Modifiers
 
   static addCondition(player, condition) {
-    PlayerHelpers.addToArray(player.conditions, condition);
+    HelperFunctions.addToArray(player.conditions, condition);
   }
 
   static removeEffect(player, effect) {
-    PlayerHelpers.removeFromArray(player.effects, effect);
+    HelperFunctions.removeFromArray(player.effects, effect);
   }
 
   static addProficiency(player, proficiency) {
-    PlayerHelpers.addToArray(player.proficiencies, proficiency);
+    HelperFunctions.addToArray(player.proficiencies, proficiency);
   }
 
   static addFeat(player, feat) {
-    PlayerHelpers.addToArray(player.feats, feat);
+    HelperFunctions.addToArray(player.feats, feat);
   }
 
   static addEffect(player, effect) {
-    PlayerHelpers.addToArray(player.effects, effect);
+    HelperFunctions.addToArray(player.effects, effect);
   }
 
   static addLanguage(player, language) {
-    PlayerHelpers.addToArray(player.knownLanguages, language);
+    HelperFunctions.addToArray(player.knownLanguages, language);
   }
 
   static removeLanguage(player, language) {
-    PlayerHelpers.removeFromArray(player.knownLanguages, language);
+    HelperFunctions.removeFromArray(player.knownLanguages, language);
   }
 
   static updateSpeed(player, speedModifier) {
-    PlayerHelpers.updateValue(speedModifier, "number", "Speed modifier must be a number");
+    HelperFunctions.updateValue(speedModifier, "number", "Speed modifier must be a number");
     player.speed += speedModifier;
   }
 
   static addResistance(player, damageType) {
-    PlayerHelpers.addToArray(player.resistances, damageType);
+    HelperFunctions.addToArray(player.resistances, damageType);
   }
 
   static removeResistance(player, damageType) {
-    PlayerHelpers.removeFromArray(player.resistances, damageType);
+    HelperFunctions.removeFromArray(player.resistances, damageType);
   }
 
   static addImmunity(player, damageType) {
-    PlayerHelpers.addToArray(player.immunities, damageType);
+    HelperFunctions.addToArray(player.immunities, damageType);
   }
 
   static removeImmunity(player, damageType) {
-    PlayerHelpers.removeFromArray(player.immunities, damageType);
+    HelperFunctions.removeFromArray(player.immunities, damageType);
   }
 
   static addVulnerability(player, damageType) {
-    PlayerHelpers.addToArray(player.vulnerabilities, damageType);
+    HelperFunctions.addToArray(player.vulnerabilities, damageType);
   }
 
   static removeVulnerability(player, damageType) {
-    PlayerHelpers.removeFromArray(player.vulnerabilities, damageType);
+    HelperFunctions.removeFromArray(player.vulnerabilities, damageType);
   }
 
   static updateDeathSaves(player, successes = 0, failures = 0) {
-    PlayerHelpers.updateValue(successes, "number", "Successes must be numbers");
-    PlayerHelpers.updateValue(failures, "number", "Failures must be numbers");
+    HelperFunctions.updateValue(successes, "number", "Successes must be numbers");
+    HelperFunctions.updateValue(failures, "number", "Failures must be numbers");
     player.deathSaves.successes = Math.min(3, player.deathSaves.successes + successes);
     player.deathSaves.failures = Math.min(3, player.deathSaves.failures + failures);
   }
-
-
 }
 
-module.exports = PlayerMethods;
+module.exports = PlayerManager;

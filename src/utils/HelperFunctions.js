@@ -1,4 +1,4 @@
-class PlayerHelpers {
+class HelperFunctions {
     static addToArray(array, value) {
       if (typeof value !== 'string' || value.trim() === "") {
         throw new Error("Value must be a non-empty string");
@@ -23,5 +23,5 @@ class PlayerHelpers {
     }
   }
   
-  module.exports = PlayerHelpers;
+  module.exports = HelperFunctions;
   
