@@ -10,7 +10,6 @@ async function validateSpells(req, res, next) {
       req.validSpells = [];
       return next();
     }
-
     // Batch validate spells
     const response = await axios.post(`http://localhost:${process.env.PORT}/api/spells/validate`, { spells: knownSpells });
     const validSpells = response.data.validSpells || [];

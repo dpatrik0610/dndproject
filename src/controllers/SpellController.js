@@ -84,24 +84,31 @@ class SpellController {
     }
   }
 
-  async validate(req, res) {
+  async validateMultiple(req, res) {
     try {
       const { spells } = req.body;
-
+  
       if (!Array.isArray(spells)) {
         return res.status(400).json({ error: 'Spells must be an array' });
       }
-      let validSpells = [];
-      spells.forEach(async spell => {
-        if(await this.spellService.spellExists(spell)) validSpells.push(spell);
-      });
-
-      return res.status(200).json({ validSpells });
+  
+      const validSpells = await Promise.all(
+        spells.map(async spell => {
+          const exists = await this.spellService.spellExists(spell);
+          return exists ? spell : null;
+        })
+      );
+  
+      const filteredValidSpells = validSpells.filter(spell => spell !== null);
+  
+      return res.status(200).json({ validSpells: filteredValidSpells });
     } catch (err) {
       this.logger.error('Error validating spells:', err.message);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
+  
+  
 
 }
 
