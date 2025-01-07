@@ -1,4 +1,5 @@
 const axios = require('axios');
+const {logTemplates: logger} = require('../utils/logTemplates')
 
 async function validateSpells(req, res, next) {
   try {
@@ -25,7 +26,7 @@ async function validateSpells(req, res, next) {
     req.validSpells = validSpells;
     next();
   } catch (err) {
-    console.error('Error validating spells:', err.message);
+    logger.error('Error validating spells:', err);
     res.status(500).json({ error: 'Error validating spells. Please try again.' });
   }
 }
