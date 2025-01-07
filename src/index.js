@@ -8,7 +8,7 @@ const { connectDB, getDB, closeDB } = require('./config/database');
 const ping = require('./routes/Ping');
 const spellRoutes = require('./routes/spellroutes');
 const playerRoutes = require('./routes/playerRoutes');
-
+const InventoryRoutes = require("./routes/inventoryRoutes");
 // Utils
 const logEndpoints = require('./utils/logEndpoints');
 const logCollections = require('./utils/logCollections');
@@ -27,6 +27,7 @@ connectDB()
     app.use('/api/ping', ping());
     app.use('/api/spells', spellRoutes(db));
     app.use('/api/players', playerRoutes(db));
+    app.use('/api/inventory', InventoryRoutes(db));
     app.get('/api/info', (req, res) => {
       const endpoints = logEndpoints(app);
       logger.info("Request made to /api/info");
