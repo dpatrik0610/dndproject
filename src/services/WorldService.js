@@ -164,4 +164,4 @@ class WorldService {
   }
 }
 
-module.exports = WorldManager;
+module.exports = WorldService;

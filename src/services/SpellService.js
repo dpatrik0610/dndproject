@@ -11,9 +11,9 @@ class SpellService {
   async init() {
     try {
       this.originalSpells = await this.dnd5eClient.getSpells();
-      logger.info("All DnD5e Spells Imported.");
+      this.logger.info("All DnD5e Spells Imported.");
     } catch (err) {
-      logger.error("Error loading spells:", err.message);
+      this.logger.error("Error loading spells:", err.message);
       throw new Error("Couldn't get custom spells from repository.");
     }
   }
@@ -26,7 +26,7 @@ class SpellService {
     try {
       return await this.spellRepository.getAllShort();
     } catch (err) {
-      logger.error("Couldn't get custom spells from repository.");
+      this.logger.error("Couldn't get custom spells from repository.");
       throw new Error("Couldn't get custom spells from repository.");
     }
   }
@@ -84,7 +84,7 @@ class SpellService {
       return `Spell with index ${spellData.index} successfully created.`;
     } catch (err) {
       
-      logger.error("Error creating the spell:", err.message);
+      this.logger.error("Error creating the spell:", err.message);
       throw new Error("Couldn't create spell.");
     }
   }
@@ -93,7 +93,7 @@ class SpellService {
     if (!spellIndex || !spellData) throw new Error("Argument must have a value!");
 
     try {
-      logger.log(spellIndex);
+      this.logger.log(spellIndex);
       const updateResult = await this.spellRepository.updateSpell(spellIndex, spellData);
   
       if (updateResult.modifiedCount === 0) {
@@ -102,7 +102,7 @@ class SpellService {
   
       return { message: `Spell with index "${spellIndex}" successfully updated.` };
     } catch (err) {
-      logger.error("Error updating the spell:", err.message);
+      this.logger.error("Error updating the spell:", err.message);
       throw new Error("Couldn't update spell.");
     }
   }
