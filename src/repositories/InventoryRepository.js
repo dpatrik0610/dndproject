@@ -1,97 +1,96 @@
-// repositories/InventoryRepository.js
 class InventoryRepository {
     constructor(collection) {
       this.collection = collection;
     }
   
-    async getByPlayerId(playerId) {
+    async getByentityId(entityId) {
       try {
-        const inventory = await this.collection.findOne({ playerId });
+        const inventory = await this.collection.findOne({ entityId });
         return inventory;
       } catch (error) {
-        throw new Error(`Error getting inventory for player ${playerId}: ${error.message}`);
+        throw new Error(`Error getting inventory for entity ${entityId}: ${error.message}`);
       }
     }
   
-    async createOrUpdate(playerId, inventoryData) {
+    async createOrUpdate(entityId, inventoryData) {
       try {
         const result = await this.collection.updateOne(
-          { playerId },
+          { entityId },
           { $set: inventoryData },
           { upsert: true }
         );
         return result;
       } catch (error) {
-        throw new Error(`Error creating or updating inventory for player ${playerId}: ${error.message}`);
+        throw new Error(`Error creating or updating inventory for entity ${entityId}: ${error.message}`);
       }
     }
   
-    async addItem(playerId, item) {
+    async addItem(entityId, item) {
       try {
         const result = await this.collection.updateOne(
-          { playerId },
+          { entityId },
           { $push: { items: item } }
         );
         return result;
       } catch (error) {
-        throw new Error(`Error adding item to inventory for player ${playerId}: ${error.message}`);
+        throw new Error(`Error adding item to inventory for entity ${entityId}: ${error.message}`);
       }
     }
   
-    async removeItem(playerId, itemId) {
+    async removeItem(entityId, itemId) {
       try {
         const result = await this.collection.updateOne(
-          { playerId },
+          { entityId },
           { $pull: { items: { _id: itemId } } }
         );
         return result;
       } catch (error) {
-        throw new Error(`Error removing item from inventory for player ${playerId}: ${error.message}`);
+        throw new Error(`Error removing item from inventory for entity ${entityId}: ${error.message}`);
       }
     }
   
-    async getItems(playerId) {
+    async getItems(entityId) {
       try {
-        const inventory = await this.collection.findOne({ playerId });
+        const inventory = await this.collection.findOne({ entityId });
         return inventory ? inventory.items : [];
       } catch (error) {
-        throw new Error(`Error listing items for player ${playerId}: ${error.message}`);
+        throw new Error(`Error listing items for entity ${entityId}: ${error.message}`);
       }
     }
   
-    async addItemToEquipped(playerId, item) {
+    async addItemToEquipped(entityId, item) {
       try {
         const result = await this.collection.updateOne(
-          { playerId },
+          { entityId },
           { $push: { equipped: item } }
         );
         return result;
       } catch (error) {
-        throw new Error(`Error equipping item for player ${playerId}: ${error.message}`);
+        throw new Error(`Error equipping item for entity ${entityId}: ${error.message}`);
       }
     }
   
-    async removeItemFromEquipped(playerId, itemId) {
+    async removeItemFromEquipped(entityId, itemId) {
       try {
         const result = await this.collection.updateOne(
-          { playerId },
+          { entityId },
           { $pull: { equipped: { _id: itemId } } }
         );
         return result;
       } catch (error) {
-        throw new Error(`Error unequipping item for player ${playerId}: ${error.message}`);
+        throw new Error(`Error unequipping item for entity ${entityId}: ${error.message}`);
       }
     }
   
-    async addGold(playerId, amount) {
+    async addGold(entityId, amount) {
       try {
         const result = await this.collection.updateOne(
-          { playerId },
+          { entityId },
           { $inc: { gold: amount } }
         );
         return result;
       } catch (error) {
-        throw new Error(`Error adding gold to player ${playerId}: ${error.message}`);
+        throw new Error(`Error adding gold to entity ${entityId}: ${error.message}`);
       }
     }
   }

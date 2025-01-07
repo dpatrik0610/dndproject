@@ -1,103 +1,112 @@
-// services/InventoryService.js
 class InventoryService {
     constructor(inventoryRepository, logger) {
       this.repository = inventoryRepository;
       this.logger = logger;
     }
   
-    async getInventoryByPlayerId(playerId) {
+    async createInventory (entityId) {
+        try {
+            const inventory = await this.repository.createOrUpdate(entityId);
+            return inventory;
+        } catch (error){
+            this.logger.error(`Error creating inventory for entity: ${entityId}: ${error.message}`);
+            throw error;
+        }
+    }
+
+    async getInventoryByentityId(entityId) {
       try {
-        const inventory = await this.repository.getByPlayerId(playerId);
+        const inventory = await this.repository.getByentityId(entityId);
         return inventory;
       } catch (error) {
-        this.logger.error(`Error getting inventory for player ${playerId}: ${error.message}`);
+        this.logger.error(`Error getting inventory for Entity ${entityId}: ${error.message}`);
         throw error;
       }
     }
   
-    async addItemToInventory(playerId, item) {
+    async addItemToInventory(entityId, item) {
       try {
-        const inventory = await this.getInventoryByPlayerId(playerId);
+        const inventory = await this.getInventoryByentityId(entityId);
         if (!inventory) {
-          await this.repository.createOrUpdate(playerId, { items: [item] });
+          await this.repository.createOrUpdate(entityId, { items: [item] });
         } else {
-          await this.repository.addItem(playerId, item);
+          await this.repository.addItem(entityId, item);
         }
-        this.logger.info(`Item added to inventory for player: ${playerId}`);
+        this.logger.info(`Item added to inventory for Entity: ${entityId}`);
       } catch (error) {
-        this.logger.error(`Error adding item to inventory for player ${playerId}: ${error.message}`);
+        this.logger.error(`Error adding item to inventory for Entity ${entityId}: ${error.message}`);
         throw error;
       }
     }
   
-    async removeItemFromInventory(playerId, itemId) {
+    async removeItemFromInventory(entityId, itemId) {
       try {
-        await this.repository.removeItem(playerId, itemId);
-        this.logger.info(`Item removed from inventory for player: ${playerId}`);
+        await this.repository.removeItem(entityId, itemId);
+        this.logger.info(`Item removed from inventory for Entity: ${entityId}`);
       } catch (error) {
-        this.logger.error(`Error removing item from inventory for player ${playerId}: ${error.message}`);
+        this.logger.error(`Error removing item from inventory for Entity ${entityId}: ${error.message}`);
         throw error;
       }
     }
   
-    async listInventoryItems(playerId) {
+    async listInventoryItems(entityId) {
       try {
-        return await this.repository.getItems(playerId);
+        return await this.repository.getItems(entityId);
       } catch (error) {
-        this.logger.error(`Error listing items in inventory for player ${playerId}: ${error.message}`);
+        this.logger.error(`Error listing items in inventory for Entity ${entityId}: ${error.message}`);
         throw error;
       }
     }
   
-    async equipItem(playerId, itemId) {
+    async equipItem(entityId, itemId) {
       try {
-        const inventory = await this.getInventoryByPlayerId(playerId);
+        const inventory = await this.getInventoryByentityId(entityId);
         const item = inventory.items.find(item => item._id === itemId);
   
         if (!item) {
           throw new Error(`Item with id ${itemId} not found`);
         }
   
-        await this.repository.addItemToEquipped(playerId, item);
-        this.logger.info(`Item equipped for player: ${playerId}`);
+        await this.repository.addItemToEquipped(entityId, item);
+        this.logger.info(`Item equipped for Entity: ${entityId}`);
       } catch (error) {
-        this.logger.error(`Error equipping item for player ${playerId}: ${error.message}`);
+        this.logger.error(`Error equipping item for Entity ${entityId}: ${error.message}`);
         throw error;
       }
     }
   
-    async unequipItem(playerId, itemId) {
+    async unequipItem(entityId, itemId) {
       try {
-        const inventory = await this.getInventoryByPlayerId(playerId);
+        const inventory = await this.getInventoryByentityId(entityId);
         const item = inventory.items.find(item => item._id === itemId);
   
         if (!item) {
           throw new Error(`Item with id ${itemId} not found`);
         }
   
-        await this.repository.removeItemFromEquipped(playerId, itemId);
-        this.logger.info(`Item unequipped for player: ${playerId}`);
+        await this.repository.removeItemFromEquipped(entityId, itemId);
+        this.logger.info(`Item unequipped for Entity: ${entityId}`);
       } catch (error) {
-        this.logger.error(`Error unequipping item for player ${playerId}: ${error.message}`);
+        this.logger.error(`Error unequipping item for Entity ${entityId}: ${error.message}`);
         throw error;
       }
     }
   
-    async sellItem(playerId, itemId, price) {
+    async sellItem(entityId, itemId, price) {
       try {
-        const inventory = await this.getInventoryByPlayerId(playerId);
+        const inventory = await this.getInventoryByentityId(entityId);
         const item = inventory.items.find(item => item._id === itemId);
   
         if (!item) {
           throw new Error(`Item with id ${itemId} not found`);
         }
   
-        await this.repository.removeItem(playerId, itemId);
-        await this.repository.addGold(playerId, price);
+        await this.repository.removeItem(entityId, itemId);
+        await this.repository.addGold(entityId, price);
   
-        this.logger.info(`Item sold for ${price} gold by player: ${playerId}`);
+        this.logger.info(`Item sold for ${price} gold by Entity: ${entityId}`);
       } catch (error) {
-        this.logger.error(`Error selling item for player ${playerId}: ${error.message}`);
+        this.logger.error(`Error selling item for Entity ${entityId}: ${error.message}`);
         throw error;
       }
     }
