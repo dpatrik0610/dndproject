@@ -83,6 +83,26 @@ class SpellController {
       res.status(400).json({ error: err.message });
     }
   }
+
+  async validate(req, res) {
+    try {
+      const { spells } = req.body;
+
+      if (!Array.isArray(spells)) {
+        return res.status(400).json({ error: 'Spells must be an array' });
+      }
+      let validSpells = [];
+      spells.forEach(async spell => {
+        if(await this.spellService.spellExists(spell)) validSpells.push(spell);
+      });
+
+      return res.status(200).json({ validSpells });
+    } catch (err) {
+      this.logger.error('Error validating spells:', err.message);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
 }
 
 module.exports = SpellController;

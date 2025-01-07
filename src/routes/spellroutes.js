@@ -27,6 +27,7 @@ module.exports = (db) => {
         router.get('/:index', (req, res) => spellController.getByIndex(req, res));
         
         router.post('/create', validateRequest(spellValidator), (req, res) => spellController.create(req, res));
+        router.post('/validate', (req, res) => spellController.validate(req, res));
         
         router.put('/update/:index', (req, res) => spellController.update(req, res));
         router.delete('/delete/:index', (req, res) => spellController.delete(req, res));
