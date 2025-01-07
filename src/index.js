@@ -12,13 +12,14 @@ const playerRoutes = require('./routes/playerRoutes');
 // Utils
 const logEndpoints = require('./utils/logEndpoints');
 const logCollections = require('./utils/logCollections');
-const { logTemplates } = require('./utils/logTemplates');
+const { logTemplates: logger } = require('./utils/logTemplates');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
-
+console.log("\n");
+logger.info("Starting up Server...\n");
 connectDB()
   .then(() => {
     const db = getDB();
@@ -28,7 +29,7 @@ connectDB()
     app.use('/api/players', playerRoutes(db));
     app.get('/api/info', (req, res) => {
       const endpoints = logEndpoints(app);
-      logTemplates.info("Request made to /api/info");
+      logger.info("Request made to /api/info");
     
       res.json({
         message: "Available API Endpoints",
@@ -38,23 +39,23 @@ connectDB()
     
     logCollections(db);
     app.listen(PORT, async () => {
-      logTemplates.success(`Server running on port ${PORT}`);
+      logger.success(`Server running on port ${PORT}.`);
     });
   })
   .catch((err) => {
-    logTemplates.error(`Failed to connect to the database: ${err.message}`);
+    logger.error(`Failed to connect to the database: ${err.message}`);
   });
 
 process.on('SIGINT', async () => {
-  logTemplates.warning('SIGINT signal received. Closing database connection...');
+  logger.warning('SIGINT signal received. Closing database connection...');
   await closeDB();
-  logTemplates.info('Database connection closed. Exiting process.');
+  logger.info('Database connection closed. Exiting process.');
   process.exit(0);
 });
 
 process.on('SIGTERM', async () => {
-  logTemplates.warning('SIGTERM signal received. Closing database connection...');
+  logger.warning('SIGTERM signal received. Closing database connection...');
   await closeDB();
-  logTemplates.info('Database connection closed. Exiting process.');
+  logger.info('Database connection closed. Exiting process.');
   process.exit(0);
 });
