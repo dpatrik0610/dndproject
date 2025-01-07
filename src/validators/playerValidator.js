@@ -33,14 +33,6 @@ const playerValidator = Joi.object({
   proficiencies: Joi.array().items(Joi.string()).default([]).optional(),
   traits: Joi.array().items(Joi.string()).default([]).optional(),
   conditions: Joi.array().items(Joi.string()).default([]).optional(),
-  inventory: Joi.array().items(Joi.object()).default([]).optional(),
-  equipment: Joi.array().items(Joi.object()).default([]).optional(),
-  currency: Joi.object({
-    platinum: Joi.number().integer().min(0).default(0),
-    gold: Joi.number().integer().min(0).default(0),
-    silver: Joi.number().integer().min(0).default(0),
-    copper: Joi.number().integer().min(0).default(0),
-  }).required(),
   hp: Joi.number().integer().min(0).default(10).required(),
   tempHp: Joi.number().integer().min(0).default(0).optional(),
   hitDice: Joi.string().default('1d8').required(),
@@ -62,6 +54,7 @@ const playerValidator = Joi.object({
   familiar: Joi.object().allow(null).optional(),
   proficiencyBonus: Joi.number().integer().min(0).default(2).required(),
   reputation: Joi.number().integer().min(0).default(0).optional(),
+  capacity: Joi.number().integer().min(0).default(10).optional(),
   npc: Joi.boolean().default(false).required(),
 }).custom((value, helpers) => {
   // Ensure ability scores are valid

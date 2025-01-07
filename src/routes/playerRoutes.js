@@ -2,7 +2,7 @@ const express = require('express');
 const PlayerController = require('../controllers/PlayerController');
 const PlayerService = require('../services/PlayerService');
 const PlayerRepository = require('../repositories/PlayerRepository');
-const CurrencyManager = require('../models/Player/PlayerCurrencyManager');
+const CurrencyManager = require('../models/Inventory/CurrencyManager');
 
 const validateRequest = require('../middlewares/ValidateRequest');
 const validateSpells = require('../middlewares/ValidateSpells');

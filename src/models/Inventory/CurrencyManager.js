@@ -1,4 +1,4 @@
-class PlayerCurrencyManager {
+class CurrencyManager {
   static RATES = {
     PLATINUM: 1000000, // 1 Platinum = 1,000,000 copper
     GOLD: 10000,       // 1 Gold = 10,000 copper
@@ -95,4 +95,4 @@ class PlayerCurrencyManager {
   }
 }
 
-module.exports = PlayerCurrencyManager;
+module.exports = CurrencyManager;

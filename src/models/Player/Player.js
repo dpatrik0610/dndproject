@@ -1,8 +1,15 @@
+const { ObjectId } = require("mongodb");
 const PlayerMethods = require("./PlayerMethods");
-
+const CurrencyManager = require("../Inventory/CurrencyManager");
+const { EquipmentManager, BodyParts } = require("../Inventory/EquipmentManager");
+const Inventory = require("../Inventory/Inventory");
+const {logTemplates : logger} = require("../../utils/logTemplates");
 class Player {
   constructor(args = {}) {
+    const { inventory, playerId = new ObjectId(), ...args } = args;
+
     Object.assign(this, {
+      playerId,
       name: "Unknown Adventurer",
       age: 0,
       height: 0,
@@ -21,9 +28,6 @@ class Player {
       proficiencies: [],
       traits: [],
       conditions: [],
-      inventory: [],
-      equipment: [],
-      currency: { platinum: 0, gold: 0, silver: 0, copper: 0 },
       hp: 10,
       tempHp: 0,
       hitDice: "1d8",
@@ -43,10 +47,74 @@ class Player {
       proficiencyBonus: 2,
       reputation: 0,
       npc: false,
+      capacity,
+      equipment: [],
       ...args,
     });
 
+    if (!inventory) {
+      const equipmentManager = new EquipmentManager({ playerId });
+      const currencyManager = new CurrencyManager();
+      this.inventory = new Inventory({
+        playerId,
+        equipmentManager,
+        currencyManager,
+        BodyParts,
+        capacity
+      });
+      logger.info(`Generating new Inventory for Player: (id: ${this.playerId}) ${this.name}...`);
+    } else {
+      this.inventory = inventory;
+    }
+
     PlayerMethods.updateProficiencyBonus(this);
+  }
+
+  // Currency-related methods
+  addCurrency(currencyType, amount) {
+    this.inventory.addCurrency(currencyType, amount);
+  }
+
+  removeCurrency(currencyType, amount) {
+    this.inventory.removeCurrency(currencyType, amount);
+  }
+
+  transferCurrency(toPlayer, currencyType, amount) {
+    this.inventory.transferCurrency(toPlayer.inventory, currencyType, amount);
+  }
+
+  getTotalCurrency() {
+    return this.inventory.getTotalCurrency();
+  }
+
+  // Equipment-related methods
+  equipItem(item, bodyPart) {
+    this.inventory.equipItem(item, bodyPart);
+  }
+
+  unequipItem(bodyPart) {
+    this.inventory.unequipItem(bodyPart);
+  }
+
+  // Inventory-related methods
+  addItemToInventory(item) {
+    this.inventory.addItem(item);
+  }
+
+  removeItemFromInventory(identifier) {
+    return this.inventory.removeItem(identifier);
+  }
+
+  sellItem(identifier, sellRate = 0) {
+    return this.inventory.sellItem(identifier, sellRate);
+  }
+
+  listInventoryItems() {
+    return this.inventory.listItems();
+  }
+
+  listEquippedItems() {
+    return this.inventory.listEquippedItems();
   }
 }
 
