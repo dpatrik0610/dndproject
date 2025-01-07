@@ -1,7 +1,7 @@
 class InventoryRepository {
     constructor(_collection, _logger) {
         this.collection = _collection
-      this.logger = _logger;
+        this.logger = _logger;
     }
   
     async createOrUpdate(playerId, inventoryData) {
@@ -69,7 +69,7 @@ class InventoryRepository {
     async getItems(playerId) {
       try {
         const inventory = await this.getByPlayerId(playerId);
-        
+
         return inventory ? inventory.items : [];
       } catch (error) {
         this.logger.error(`Error retrieving items for player ${playerId}: ${error.message}`);
