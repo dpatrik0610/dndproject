@@ -11,7 +11,7 @@ class PlayerRepository {
   async getById(playerId) {
     try{
       const objectId = new ObjectId(String(playerId));
-      return await this.collection.findOne({ _id: new objectId });
+      return await this.collection.findOne({ _id: objectId });
     } catch (err) {
       throw new Error(`Couldn't get player by their _id: ${err}`);
     }
