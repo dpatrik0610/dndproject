@@ -10,7 +10,8 @@ class PlayerRepository {
 
   async getById(playerId) {
     try{
-      return await this.collection.findOne({ _id: new ObjectId(playerId) });
+      const objectId = new ObjectId(String(playerId));
+      return await this.collection.findOne({ _id: new objectId });
     } catch (err) {
       throw new Error(`Couldn't get player by their _id: ${err}`);
     }
@@ -22,12 +23,16 @@ class PlayerRepository {
   }
 
   async deleteOne(playerId) {
-    return await this.collection.deleteOne({ _id: new ObjectId(playerId) });
+    const objectId = new ObjectId(String(playerId));
+
+    return await this.collection.deleteOne({ _id: objectId });
   }
 
   async updatePlayer(playerId, updatedData) {
+    const objectId = new ObjectId(String(playerId));
+
     return await this.collection.updateOne(
-      { _id: new ObjectId(playerId) },
+      { _id: objectId },
       { $set: updatedData }
     );
   }
