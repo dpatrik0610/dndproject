@@ -1,79 +1,97 @@
+// repositories/InventoryRepository.js
 class InventoryRepository {
-    constructor(_collection, _logger) {
-        this.collection = _collection
-        this.logger = _logger;
-    }
-  
-    async createOrUpdate(playerId, inventoryData) {
-      try {
-        const existingInventory = await this.collection.findOne({ playerId });
-
-        if (!existingInventory) {
-            await this.collection.insertOne({ playerId, ...inventoryData });
-            this.logger.info(`Created inventory for new player: ${playerId}`);
-        }
-
-        await this.collection.updateOne({ playerId }, { $set: inventoryData });
-        this.logger.info(`Updated inventory for player: ${playerId}`);
-
-      } catch (error) {
-        this.logger.error(`Error in createOrUpdate for player ${playerId}: ${error.message}`);
-        throw error;
-      }
+    constructor(collection) {
+      this.collection = collection;
     }
   
     async getByPlayerId(playerId) {
       try {
         const inventory = await this.collection.findOne({ playerId });
-
-        if (!inventory) {
-          this.logger.warn(`No inventory found for player: ${playerId}`);
-        }
-
         return inventory;
       } catch (error) {
-        this.logger.error(`Error in getByPlayerId for player ${playerId}: ${error.message}`);
-        throw error;
+        throw new Error(`Error getting inventory for player ${playerId}: ${error.message}`);
+      }
+    }
+  
+    async createOrUpdate(playerId, inventoryData) {
+      try {
+        const result = await this.collection.updateOne(
+          { playerId },
+          { $set: inventoryData },
+          { upsert: true }
+        );
+        return result;
+      } catch (error) {
+        throw new Error(`Error creating or updating inventory for player ${playerId}: ${error.message}`);
       }
     }
   
     async addItem(playerId, item) {
       try {
-
-        await this.collection.updateOne(
+        const result = await this.collection.updateOne(
           { playerId },
           { $push: { items: item } }
         );
-
-        this.logger.info(`Added item to inventory for player: ${playerId}`);
+        return result;
       } catch (error) {
-        this.logger.error(`Error adding item for player ${playerId}: ${error.message}`);
-        throw error;
+        throw new Error(`Error adding item to inventory for player ${playerId}: ${error.message}`);
       }
     }
   
     async removeItem(playerId, itemId) {
       try {
-        await this.collection.updateOne(
+        const result = await this.collection.updateOne(
           { playerId },
-          { $pull: { items: { id: itemId } } }
+          { $pull: { items: { _id: itemId } } }
         );
-
-        this.logger.info(`Removed item ${itemId} from inventory for player: ${playerId}`);
+        return result;
       } catch (error) {
-        this.logger.error(`Error removing item ${itemId} for player ${playerId}: ${error.message}`);
-        throw error;
+        throw new Error(`Error removing item from inventory for player ${playerId}: ${error.message}`);
       }
     }
   
     async getItems(playerId) {
       try {
-        const inventory = await this.getByPlayerId(playerId);
-
+        const inventory = await this.collection.findOne({ playerId });
         return inventory ? inventory.items : [];
       } catch (error) {
-        this.logger.error(`Error retrieving items for player ${playerId}: ${error.message}`);
-        throw error;
+        throw new Error(`Error listing items for player ${playerId}: ${error.message}`);
+      }
+    }
+  
+    async addItemToEquipped(playerId, item) {
+      try {
+        const result = await this.collection.updateOne(
+          { playerId },
+          { $push: { equipped: item } }
+        );
+        return result;
+      } catch (error) {
+        throw new Error(`Error equipping item for player ${playerId}: ${error.message}`);
+      }
+    }
+  
+    async removeItemFromEquipped(playerId, itemId) {
+      try {
+        const result = await this.collection.updateOne(
+          { playerId },
+          { $pull: { equipped: { _id: itemId } } }
+        );
+        return result;
+      } catch (error) {
+        throw new Error(`Error unequipping item for player ${playerId}: ${error.message}`);
+      }
+    }
+  
+    async addGold(playerId, amount) {
+      try {
+        const result = await this.collection.updateOne(
+          { playerId },
+          { $inc: { gold: amount } }
+        );
+        return result;
+      } catch (error) {
+        throw new Error(`Error adding gold to player ${playerId}: ${error.message}`);
       }
     }
   }
