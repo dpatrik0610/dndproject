@@ -12,14 +12,11 @@ const { logTemplates } = require('../utils/logTemplates');
 module.exports = (db) => {
     const router = express.Router();
     try {
-        // Repositories
         const dnd5eClient = new Dnd5eClient();
         const spellRepository = new SpellRepository(db.collection('Spells'));
         
-        // Services
-        const spellService = new SpellService(spellRepository, dnd5eClient);
+        const spellService = new SpellService(spellRepository, dnd5eClient, logTemplates);
         
-        // Controller
         const spellController = new SpellController(spellService, logTemplates);
         
         router.get('/', (req, res) => spellController.getAll(req, res));
