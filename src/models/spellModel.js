@@ -94,6 +94,5 @@ class Spell {
           url: this.url
         };
       }
+      
   }
-
-  module.exports = Spell

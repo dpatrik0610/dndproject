@@ -1,6 +1,5 @@
 const express = require('express');
 const Dnd5eClient = require('../repositories/Dnd5eClient');
-const Spell = require('../models/Spell/Spell');
 const SpellRepository = require("../repositories/SpellRepository");
 
 const SpellService = require('../services/SpellService');
@@ -18,7 +17,7 @@ module.exports = (db) => {
         
         const spellService = new SpellService(spellRepository, dnd5eClient, logTemplates);
         
-        const spellController = new SpellController(spellService, Spell, logTemplates);
+        const spellController = new SpellController(spellService, logTemplates);
         
         router.get('/', (req, res) => spellController.getAll(req, res));
         router.get('/customspells', (req, res) => spellController.getAllCustom(req, res));
