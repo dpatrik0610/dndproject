@@ -1,4 +1,5 @@
 const express = require('express');
+const World = require('../models/World/World');
 const WorldService = require('../services/WorldService');
 const WorldRepository = require('../repositories/WorldRepository');
 const { logTemplates: logger } = require('../utils/logTemplates');
@@ -12,7 +13,7 @@ module.exports = (db) => {
   try {
     const worldRepository = new WorldRepository(db.collection('Worlds'));
     const worldService = new WorldService(worldRepository, logger);
-    const worldController = new WorldController(worldService, logger);
+    const worldController = new WorldController(worldService, logger, World);
     
     router.get('/', (req, res) => worldController.getAll(req, res));
 

@@ -18,7 +18,7 @@ class World {
       weatherPatterns = {},
       currentTime = [],
       players = [],
-      ...args
+      ...otherOptions
     } = args;
 
     Object.assign(this, {
@@ -37,7 +37,7 @@ class World {
       weatherPatterns,  // Weather patterns (seasons, storms, etc.)
       currentTime,      // Current time of the campaign.
       players,          // List of players that have contributed to or are active in the world
-      ...args,
+      ...otherOptions,
     });
   }
 }

@@ -1,7 +1,8 @@
 class WorldController {
-    constructor(worldService, logger) {
+    constructor(worldService, logger, WorldModel) {
         this.worldService = worldService;
         this.logger = logger;
+        this.WorldModel = WorldModel;
     }
 
     async getAll(req, res) {
@@ -33,7 +34,7 @@ class WorldController {
 
     async create(req, res) {
         try {
-            const worldData = req.body;
+            const worldData = new this.WorldModel(req.body);
             const newWorld = await this.worldService.createWorld(worldData);
 
             return res.status(201).json(newWorld);
@@ -47,7 +48,7 @@ class WorldController {
         const { worldId } = req.params;
 
         try {
-            const worldData = req.body;
+            const worldData = new this.WorldModel(req.body);
             const updatedWorld = await this.worldService.updateWorld(worldId, worldData);
 
             if (!updatedWorld) {
