@@ -1,9 +1,6 @@
-const { ObjectId } = require("mongodb");
-
 class World {
   constructor(args = {}) {
     const {
-      worldId = new ObjectId(),
       name = "Unnamed World",
       description = "A new and mysterious world.",
       factions = [],
@@ -22,7 +19,6 @@ class World {
     } = args;
 
     Object.assign(this, {
-      worldId,
       name,
       description,
       factions,         // List of factions within the world

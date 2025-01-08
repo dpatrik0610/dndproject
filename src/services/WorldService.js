@@ -18,6 +18,17 @@ class WorldService {
     }
   }
 
+  async getAllWorlds() {
+    try{
+      const worlds = await this.repository.getAll();
+
+      return worlds;
+    } catch (error) {
+      this.logger.error(`Error Fetching all worlds: ${error.message}`);
+      throw error;
+    }
+  }
+  
   async getWorldById(worldId) {
     try {
       const world = await this.repository.getById(worldId);
