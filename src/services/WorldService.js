@@ -34,7 +34,7 @@ class WorldService {
       const world = await this.repository.getById(worldId);
 
       if (!world) {
-        this.logger.warn(`World with ID ${worldId} not found.`);
+        this.logger.warning(`World with ID ${worldId} not found.`);
         throw new Error("World not found");
       }
 

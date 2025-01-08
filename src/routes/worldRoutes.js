@@ -24,12 +24,12 @@ module.exports = (db) => {
     router.delete('/:worldId', (req, res) => worldController.delete(req, res));
 
     // World Editors
-    router.post('/:worldId/region', validateRequest(worldValidator), (req, res) => worldController.addRegion(req, res));
-    router.post('/:worldId/faction', validateRequest(worldValidator), (req, res) => worldController.addFaction(req, res));
-    router.post('/:worldId/item', validateRequest(worldValidator), (req, res) => worldController.addGlobalItem(req, res));
-    router.put('/:worldId/economy', validateRequest(worldValidator), (req, res) => worldController.updateEconomy(req, res));
-    router.post('/:worldId/event', validateRequest(worldValidator), (req, res) => worldController.addEvent(req, res));
-    router.post('/:worldId/player', validateRequest(worldValidator), (req, res) => worldController.addPlayer(req, res));
+    router.post('/:worldId/region', (req, res) => worldController.addRegion(req, res));
+    router.post('/:worldId/faction', (req, res) => worldController.addFaction(req, res));
+    router.post('/:worldId/item', (req, res) => worldController.addGlobalItem(req, res));
+    router.put('/:worldId/economy', (req, res) => worldController.updateEconomy(req, res));
+    router.post('/:worldId/event', (req, res) => worldController.addEvent(req, res));
+    router.post('/:worldId/player', (req, res) => worldController.addPlayer(req, res));
     
     logger.success('World module loaded.');
   } catch (error) {

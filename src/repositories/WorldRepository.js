@@ -1,3 +1,4 @@
+const { ObjectId } = require("mongodb");
 class WorldRepository {
   constructor(collection) {
     this.collection = collection;
@@ -13,7 +14,7 @@ class WorldRepository {
 
   async getById(worldId) {
     try {
-      return await this.collection.findOne({ _id: worldId });
+      return await this.collection.findOne({ _id: (new ObjectId(String(worldId))) });
     } catch (error) {
       throw new Error(`Error getting world with ID ${worldId}: ${error.message}`);
     }
@@ -21,14 +22,14 @@ class WorldRepository {
 
   async createOrUpdate(worldId, worldData) {
     try {
-      const existingWorld = await this.collection.findOne({ _id: worldId });
+      const existingWorld = await this.collection.findOne({ _id: (new ObjectId(String(worldId))) });
 
       if (!existingWorld) {
-        await this.collection.insertOne({ _id: worldId, ...worldData });
+        await this.collection.insertOne({ _id: (new ObjectId(String(worldId))), ...worldData });
         return worldData;
       }
 
-      await this.collection.updateOne({ _id: worldId }, { $set: worldData });
+      await this.collection.updateOne({ _id: (new ObjectId(String(worldId))) }, { $set: worldData });
       return { ...existingWorld, ...worldData };
 
     } catch (error) {
@@ -37,12 +38,13 @@ class WorldRepository {
   }
 
   async addFaction(worldId, faction) {
+
     try {
       const world = await this.getById(worldId);
       if (!world) throw new Error('World not found');
 
       world.factions.push(faction);
-      await this.collection.updateOne({ _id: worldId }, { $set: { factions: world.factions } });
+      await this.collection.updateOne({ _id: (new ObjectId(String(worldId))) }, { $set: { factions: world.factions } });
 
       return world;
     } catch (error) {
@@ -51,12 +53,13 @@ class WorldRepository {
   }
 
   async addRegion(worldId, region) {
+
     try {
       const world = await this.getById(worldId);
       if (!world) throw new Error('World not found');
 
       world.regions.push(region);
-      await this.collection.updateOne({ _id: worldId }, { $set: { regions: world.regions } });
+      await this.collection.updateOne({ _id: (new ObjectId(String(worldId))) }, { $set: { regions: world.regions } });
 
       return world;
     } catch (error) {
@@ -65,12 +68,13 @@ class WorldRepository {
   }
 
   async addGlobalItem(worldId, item) {
+
     try {
-      const world = await this.getById(worldId);
+      const world = await this.getById((new ObjectId(String(worldId))));
       if (!world) throw new Error('World not found');
 
       world.globalItems.push(item);
-      await this.collection.updateOne({ _id: worldId }, { $set: { globalItems: world.globalItems } });
+      await this.collection.updateOne({ _id: (new ObjectId(String(worldId))) }, { $set: { globalItems: world.globalItems } });
 
       return world;
     } catch (error) {
@@ -79,12 +83,13 @@ class WorldRepository {
   }
 
   async updateEconomy(worldId, newEconomyState) {
+
     try {
       const world = await this.getById(worldId);
       if (!world) throw new Error('World not found');
 
       world.economyState = newEconomyState;
-      await this.collection.updateOne({ _id: worldId }, { $set: { economyState: world.economyState } });
+      await this.collection.updateOne({ _id: (new ObjectId(String(worldId))) }, { $set: { economyState: world.economyState } });
 
       return world;
     } catch (error) {
@@ -93,12 +98,13 @@ class WorldRepository {
   }
 
   async addEvent(worldId, event) {
+
     try {
       const world = await this.getById(worldId);
       if (!world) throw new Error('World not found');
 
       world.events.push(event);
-      await this.collection.updateOne({ _id: worldId }, { $set: { events: world.events } });
+      await this.collection.updateOne({ _id: (new ObjectId(String(worldId))) }, { $set: { events: world.events } });
 
       return world;
     } catch (error) {
@@ -107,12 +113,13 @@ class WorldRepository {
   }
 
   async addPlayer(worldId, player) {
+
     try {
-      const world = await this.getById(worldId);
+      const world = await this.getById((new ObjectId(String(worldId))));
       if (!world) throw new Error('World not found');
 
       world.players.push(player);
-      await this.collection.updateOne({ _id: worldId }, { $set: { players: world.players } });
+      await this.collection.updateOne({ _id: (new ObjectId(String(worldId))) }, { $set: { players: world.players } });
 
       return world;
     } catch (error) {
@@ -121,8 +128,9 @@ class WorldRepository {
   }
 
   async delete(worldId) {
+
     try {
-      const result = await this.collection.deleteOne({ _id: worldId });
+      const result = await this.collection.deleteOne({ _id: (new ObjectId(String(worldId))) });
       
       return result.deletedCount > 0;
     } catch (error) {
