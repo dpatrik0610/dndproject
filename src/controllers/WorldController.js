@@ -1,6 +1,7 @@
 class WorldController {
     constructor(worldService, playerService, logger, WorldModel) {
         this.worldService = worldService;
+        this.playerService = playerService;
         this.logger = logger;
         this.WorldModel = WorldModel;
     }

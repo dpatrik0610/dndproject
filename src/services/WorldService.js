@@ -1,3 +1,5 @@
+const LayeredError = require('../utils/LayeredError');
+
 class WorldService {
   constructor(worldRepository, logger) {
     this.repository = worldRepository;
@@ -12,7 +14,7 @@ class WorldService {
       return result;
     } catch (error) {
       this.logger.error(`Error performing ${actionName} action for world ID ${worldId}: ${error.message}`);
-      throw error;
+      throw new LayeredError(error.message, 'WorldService');
     }
   }
 
@@ -24,7 +26,7 @@ class WorldService {
       return world;
     } catch (error) {
       this.logger.error(`Error creating world: ${error.message}`);
-      throw error;
+      throw new LayeredError(error.message, 'WorldService');
     }
   }
 
@@ -34,7 +36,7 @@ class WorldService {
       return worlds;
     } catch (error) {
       this.logger.error(`Error fetching all worlds: ${error.message}`);
-      throw error;
+      throw new LayeredError(error.message, 'WorldService');
     }
   }
 
@@ -43,12 +45,12 @@ class WorldService {
       const world = await this.repository.getById(worldId);
       if (!world) {
         this.logger.warning(`World with ID ${worldId} not found.`);
-        throw new Error("World not found");
+        throw new LayeredError("World not found", 'WorldService');
       }
       return world;
     } catch (error) {
       this.logger.error(`Error getting world by ID: ${error.message}`);
-      throw error;
+      throw new LayeredError(error.message, 'WorldService');
     }
   }
 
@@ -113,18 +115,18 @@ class WorldService {
   async removePlayerFromWorld(worldId, playerId) {
     try {
       const world = await this.getWorldById(worldId);
-      const player = await this.repository.getPlayerById(playerId);
+      const playerIndex = world.players.findIndex(player => player.id === playerId);
 
-      if (!player) {
-        throw new Error(`Player with ID ${playerId} not found`);
+      if (playerIndex === -1) {
+        throw new LayeredError(`Player with ID ${playerId} not found in world ${worldId}.`, 'WorldService');
       }
-      
-      await this.repository.removePlayerFromWorld(worldId, playerId);
+
+      await this.repository.removePlayer(worldId, playerId);
       this.logger.info(`Player with ID ${playerId} removed from world ${worldId}`);
       return world;
     } catch (error) {
       this.logger.error(`Error removing player with ID ${playerId} from world ${worldId}: ${error.message}`);
-      throw error;
+      throw new LayeredError(error.message, 'WorldService');
     }
   }
 
@@ -133,7 +135,7 @@ class WorldService {
       return await this.getWorldById(worldId);
     } catch (error) {
       this.logger.error(`Error getting world info: ${error.message}`);
-      throw error;
+      throw new LayeredError(error.message, 'WorldService');
     }
   }
 }
