@@ -92,6 +92,8 @@ class DependencyContainer {
         validatePlayerId,
         validateWorldId,
         validateSpells,
+        logEndpoints,
+        logCollections,
       };
 
       return this;

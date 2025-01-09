@@ -9,6 +9,7 @@ const worldRoutes = require('./routes/worldRoutes');
 const playerRoutes = require('./routes/playerRoutes');
 const spellRoutes = require('./routes/spellRoutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
+const infoRoutes = require('./routes/infoRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -32,7 +33,9 @@ async function startServer() {
     app.use('/api/spells', spellRoutes(container));
     app.use('/api/inventory', inventoryRoutes(container));
     app.use('/api/world', worldRoutes(container));
+    app.use('/api/info', infoRoutes(container, app));
 
+    container.get('logCollections')(db);
 
     server = app.listen(PORT, () => {
       logger.success(`Server is running on port ${PORT}`);
@@ -46,7 +49,7 @@ async function startServer() {
         throw err;
       }
     });
-    
+
   } catch (err) {
     logger.error(`Server startup error: ${err}`);
   }
