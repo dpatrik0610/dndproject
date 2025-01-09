@@ -44,7 +44,7 @@ class WorldController {
                 data: world,
             });
         } catch (error) {
-            this.logger.error(`Error fetching world with ID ${worldId}:`, error.message);
+            this.logger.error(`Error fetching world with ID ${worldId}: ${error}`, error);
             return res.status(500).json({
                 status: 'error',
                 message: 'Failed to fetch world',
@@ -283,6 +283,8 @@ class WorldController {
 
         try {
             const player = await this.playerService.getPlayerOverview(playerId);
+            this.logger.debug(JSON.stringify(player));
+
             if (!player) return res.status(404).json({
                 status: 'error',
                 message: `Player not found: ${playerId}`

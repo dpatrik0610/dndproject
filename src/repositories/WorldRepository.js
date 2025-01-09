@@ -16,9 +16,7 @@ class WorldRepository {
 
   async getById(worldId) {
     try {
-      const world = await this.collection.findOne({ _id: new ObjectId(String(worldId)) });
-      if (!world) throw new LayeredError(`World with ID '${worldId}' not found.`, 'WorldRepository');
-      return world;
+      return await this.collection.findOne({ _id: new ObjectId(String(worldId)) });
     } catch (error) {
       throw new LayeredError(`Error getting world with ID ${worldId}: ${error.message}`, 'WorldRepository');
     }
@@ -42,10 +40,13 @@ class WorldRepository {
   async update(worldId, worldData) {
     try {
       const existingWorld = await this.getById(worldId);
+      if (!existingWorld) throw new LayeredError(`World does not exist: ${worldId}`, "WorldRepository");
+
       await this.collection.updateOne(
         { _id: new ObjectId(String(worldId)) },
         { $set: worldData }
       );
+
       return { ...existingWorld, ...worldData };
     } catch (error) {
       throw new LayeredError(`Error updating world with ID ${worldId}: ${error.message}`, 'WorldRepository');
@@ -118,14 +119,21 @@ class WorldRepository {
   async _modifyWorldArray(worldId, arrayField, newItem, action) {
     try {
       const world = await this.getById(worldId);
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
       const updatedArray = [...world[arrayField]];
 
-      if (action === 'add') {
-        updatedArray.push(newItem);
-      } else if (action === 'remove') {
-        const itemIndex = updatedArray.findIndex(item => item.id === newItem.id);
-        if (itemIndex === -1) throw new LayeredError(`Item not found in ${arrayField}`, 'WorldRepository');
-        updatedArray.splice(itemIndex, 1);
+      switch (action) {
+        case 'add':
+          updatedArray.push(newItem);
+          break;
+          
+        case 'remove':
+          const itemIndex = updatedArray.findIndex(item => item.id === newItem.id);
+          if (itemIndex === -1) throw new LayeredError(`Item not found in ${arrayField}`, 'WorldRepository');
+          updatedArray.splice(itemIndex, 1);
+        break;
+        default:
+          break;
       }
 
       await this.collection.updateOne(
