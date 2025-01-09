@@ -4,13 +4,23 @@ class WorldService {
     this.logger = logger;
   }
 
+  async _handleWorldAction(worldId, actionName, actionFn) {
+    try {
+      const world = await this.getWorldById(worldId);
+      const result = await actionFn(world);
+      this.logger.info(`${actionName} action completed successfully for world ID ${worldId}`);
+      return result;
+    } catch (error) {
+      this.logger.error(`Error performing ${actionName} action for world ID ${worldId}: ${error.message}`);
+      throw error;
+    }
+  }
+
   async createWorld(newWorldData) {
     try {
       if (!newWorldData) throw new Error("Missing World Data Parameters.");
-
       const world = await this.repository.create(newWorldData);
       this.logger.info(`World "${newWorldData.name}" created successfully.`);
-
       return world;
     } catch (error) {
       this.logger.error(`Error creating world: ${error.message}`);
@@ -19,25 +29,22 @@ class WorldService {
   }
 
   async getAllWorlds() {
-    try{
+    try {
       const worlds = await this.repository.getAll();
-
       return worlds;
     } catch (error) {
-      this.logger.error(`Error Fetching all worlds: ${error.message}`);
+      this.logger.error(`Error fetching all worlds: ${error.message}`);
       throw error;
     }
   }
-  
+
   async getWorldById(worldId) {
     try {
       const world = await this.repository.getById(worldId);
-
       if (!world) {
         this.logger.warning(`World with ID ${worldId} not found.`);
         throw new Error("World not found");
       }
-
       return world;
     } catch (error) {
       this.logger.error(`Error getting world by ID: ${error.message}`);
@@ -46,138 +53,84 @@ class WorldService {
   }
 
   async updateWorld(worldId, updates) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'update', async (world) => {
       Object.assign(world, updates);
       await this.repository.update(worldId, world);
-
-      this.logger.info(`World with ID ${worldId} updated successfully.`);
       return world;
-    } catch (error) {
-      this.logger.error(`Error updating world: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async deleteWorld(worldId) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'delete', async (world) => {
       await this.repository.delete(worldId);
-      this.logger.info(`World with ID ${worldId} deleted successfully.`);
-
       return world;
-    } catch (error) {
-      this.logger.error(`Error deleting world: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async addFactionToWorld(worldId, faction) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'add faction', async (world) => {
       await this.repository.addFaction(worldId, faction);
-      this.logger.info(`Faction added to world ${worldId}: ${faction.name}`);
-
       return world;
-    } catch (error) {
-      this.logger.error(`Error adding faction to world: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async addRegionToWorld(worldId, region) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'add region', async (world) => {
       await this.repository.addRegion(worldId, region);
-      this.logger.info(`Region added to world ${worldId}: ${region.name}`);
-
       return world;
-    } catch (error) {
-      this.logger.error(`Error adding region to world: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async addGlobalItemToWorld(worldId, item) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'add global item', async (world) => {
       await this.repository.addGlobalItem(worldId, item);
-      this.logger.info(`Global item added to world ${worldId}: ${item.name}`);
-
       return world;
-    } catch (error) {
-      this.logger.error(`Error adding global item to world: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async updateEconomy(worldId, newEconomyState) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'update economy', async (world) => {
       world.economyState = newEconomyState;
       await this.repository.updateEconomy(worldId, newEconomyState);
-
-      this.logger.info(`Economy state updated for world ${worldId}`);
       return world;
-    } catch (error) {
-      this.logger.error(`Error updating economy state: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async addEventToWorld(worldId, event) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'add event', async (world) => {
       await this.repository.addEvent(worldId, event);
-      this.logger.info(`Event added to world ${worldId}: ${event.name}`);
-
       return world;
-    } catch (error) {
-      this.logger.error(`Error adding event to world: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async addPlayerToWorld(worldId, player) {
-    try {
-      const world = await this.getWorldById(worldId);
-
+    return this._handleWorldAction(worldId, 'add player', async (world) => {
       await this.repository.addPlayer(worldId, player);
-      this.logger.info(`Player added to world ${worldId}: ${player.name}`);
-
       return world;
-    } catch (error) {
-      this.logger.error(`Error adding player to world: ${error.message}`);
-      throw error;
-    }
+    });
   }
 
   async removePlayerFromWorld(worldId, playerId) {
     try {
       const world = await this.getWorldById(worldId);
+      const player = await this.repository.getPlayerById(playerId);
 
+      if (!player) {
+        throw new Error(`Player with ID ${playerId} not found`);
+      }
+      
       await this.repository.removePlayerFromWorld(worldId, playerId);
-      this.logger.info(`Player removed from world ${worldId}: ${player.name}`);
-
+      this.logger.info(`Player with ID ${playerId} removed from world ${worldId}`);
       return world;
     } catch (error) {
-      this.logger.error(`Error removing player from world: ${error.message}`);
+      this.logger.error(`Error removing player with ID ${playerId} from world ${worldId}: ${error.message}`);
       throw error;
     }
   }
 
   async getWorldInfo(worldId) {
     try {
-      const world = await this.getWorldById(worldId);
-
-      return world;
+      return await this.getWorldById(worldId);
     } catch (error) {
       this.logger.error(`Error getting world info: ${error.message}`);
       throw error;
