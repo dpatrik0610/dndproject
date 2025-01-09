@@ -41,8 +41,7 @@ class WorldController {
       
           return res.status(201).json(newWorld);
         } catch (error) {
-          this.logger.error('Error creating world:', error.message);
-      
+            
           if (error.status === 409) {
             return res.status(409).json({ message: error.message });
           }

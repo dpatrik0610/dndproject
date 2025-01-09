@@ -33,6 +33,8 @@ class WorldRepository {
       const result = await this.collection.insertOne(worldData);
       return { ...worldData, _id: result.insertedId };
     } catch (error) {
+      
+      if(error.status === 409) throw error;
       throw new Error(`[WorldRepository]: ${error.message}`);
     }
   }
