@@ -13,16 +13,16 @@ const infoRoutes = require('./routes/infoRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const container = new DependencyContainer();
+const logger = container.get('logger');
 
 let server;
 
 async function startServer() {
-  const container = new DependencyContainer();
-  const logger = container.get('logger');
 
   try {
     app.use(express.json());
-    console.log('Starting server...\n');
+    logger.info('Starting server...\n');
 
     await connectDB();
     const db = getDB();
@@ -57,9 +57,9 @@ async function startServer() {
 
 // Clean up resources
 async function shutdown() {
-  console.log('Shutting down server...');
+  logger.info('Shutting down server...');
   if (server) {
-    server.close(() => console.log('Server closed.'));
+    server.close(() => logger.info('Server closed.'));
   }
   await closeDB();
   process.exit(0);
