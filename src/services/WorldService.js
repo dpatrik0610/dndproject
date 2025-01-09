@@ -168,7 +168,7 @@ class WorldService {
 
       return world;
     } catch (error) {
-      this.logger.error(`Error adding player to world: ${error.message}`);
+      this.logger.error(`Error removing player from world: ${error.message}`);
       throw error;
     }
   }
