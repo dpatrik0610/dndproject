@@ -159,6 +159,20 @@ class WorldService {
     }
   }
 
+  async removePlayerFromWorld(worldId, playerId) {
+    try {
+      const world = await this.getWorldById(worldId);
+
+      await this.repository.removePlayerFromWorld(worldId, playerId);
+      this.logger.info(`Player removed from world ${worldId}: ${player.name}`);
+
+      return world;
+    } catch (error) {
+      this.logger.error(`Error adding player to world: ${error.message}`);
+      throw error;
+    }
+  }
+
   async getWorldInfo(worldId) {
     try {
       const world = await this.getWorldById(worldId);
