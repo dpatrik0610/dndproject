@@ -1,31 +1,16 @@
 const express = require('express');
-const World = require('../models/World/World');
 
-const WorldService = require('../services/WorldService');
-const WorldRepository = require('../repositories/WorldRepository');
-const WorldController = require('../controllers/WorldController');
-
-const PlayerService = require('../services/PlayerService');
-const PlayerRepository = require('../repositories/PlayerRepository');
-
-const validateWorldId = require('../middlewares/ValidateWorldId');
-const validatePlayerId = require('../middlewares/ValidatePlayerId');
-
-const validateRequest = require('../middlewares/ValidateRequest');
-const worldValidator = require('../validators/worldValidator');
-const { logTemplates: logger } = require('../utils/logTemplates');
-
-module.exports = (db) => {
+module.exports = (container) => {
   const router = express.Router();
+  const worldController = container.get('worldController');
+  const logger = container.get('logger');
+  
+  const validateRequest = container.get('validateRequest');
+  const worldValidator = container.get('worldValidator');
+  const validateWorldId = container.get('validateWorldId');
+  const validatePlayerId = container.get('validatePlayerId');
   
   try {
-    const worldRepository = new WorldRepository(db.collection('Worlds'));
-    const worldService = new WorldService(worldRepository, logger);
-
-    const playerRepository = new PlayerRepository(db.collection('Players'));
-    const playerService = new PlayerService(playerRepository);
-
-    const worldController = new WorldController(worldService, playerService, logger, World);
     
     router.get('/', (req, res) => worldController.getAll(req, res));
 
