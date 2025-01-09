@@ -27,10 +27,11 @@ class PlayerService {
   
       // Extract short information
       const summary = {
-        id: player.id,
+        id: player._id,
         name: player.name,
-        level: player.level,
-        class: player.class,
+        race: player.race,
+        classes: player.classes,
+        level: player.level
       };
   
       return summary;
