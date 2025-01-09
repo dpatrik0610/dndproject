@@ -1,24 +1,14 @@
 const express = require('express');
-const PlayerController = require('../controllers/PlayerController');
-const PlayerService = require('../services/PlayerService');
-const CurrencyService = require('../services/CurrencyService');
-const PlayerRepository = require('../repositories/PlayerRepository');
-const CurrencyManager = require('../models/Inventory/CurrencyManager');
 
-const validateRequest = require('../middlewares/ValidateRequest');
-const validateSpells = require('../middlewares/ValidateSpells');
-const playerValidator = require('../validators/playerValidator');
-const { logTemplates } = require('../utils/logTemplates');
-
-module.exports = (db) => {
+module.exports = (container) => {
   const router = express.Router();
+  const logger = container.get('logger');
+  const playerController = container.get('playerController');
+  const validateSpells = container.get('validateSpells');
+  const validateRequest = container.get('validateRequest');
+  const playerValidator = container.get('playerValidator');
+  
   try {
-    const currencyManager = new CurrencyManager();
-    const playerRepository = new PlayerRepository(db.collection('Players'));
-    const playerService = new PlayerService(playerRepository);
-    const currencyService = new CurrencyService(playerRepository, currencyManager);
-
-    const playerController = new PlayerController(playerService, currencyService, logTemplates);
 
     router.get('/', (req, res) => playerController.getAllPlayers(req, res));
     router.get('/:playerId', (req, res) => playerController.getPlayerById(req, res));
@@ -33,9 +23,9 @@ module.exports = (db) => {
     router.delete('/currency/:playerId/', (req, res) => playerController.removeCurrency(req, res));
     router.post('/currency/transfer/:playerId', (req, res) => playerController.transferCurrency(req, res));
     
-    logTemplates.success('Player Module loaded.');
+    logger.success('Player Module loaded.');
   } catch (err) {
-    logTemplates.error(`Error initializing Player Manager: ${err.message}`);
+    logger.error(`Error initializing Player Manager: ${err.message}`);
   }
 
   return router;

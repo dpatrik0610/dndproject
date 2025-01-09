@@ -1,16 +1,11 @@
 const express = require('express');
-const InventoryRepository = require('../repositories/InventoryRepository');
-const InventoryService = require('../services/InventoryService');
-const InventoryController = require('../controllers/InventoryController');
-const { logTemplates: logger } = require('../utils/logTemplates');
 
-module.exports = (db) => {
+module.exports = (container) => {
   const router = express.Router();
-  try {
-    const inventoryRepository = new InventoryRepository(db.collection('Inventories'));
-    const inventoryService = new InventoryService(inventoryRepository, logger);
-    const inventoryController = new InventoryController(inventoryService, logger);
+  const logger = container.get('logger');
+  const inventoryController = container.get('inventoryController');
 
+  try {
     router.get('/:entityId', (req, res) => inventoryController.getInventoryByentityId(req, res));
     router.post('/:entityId/items', (req, res) => inventoryController.addItemToInventory(req, res));
     router.delete('/:entityId/items/:itemId', (req, res) => inventoryController.removeItemFromInventory(req, res));

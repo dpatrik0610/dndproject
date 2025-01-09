@@ -1,65 +1,68 @@
 require('dotenv').config({ path: './.env' });
 const express = require('express');
-
-// Database
+const DependencyContainer = require('./dependencyContainer');
 const { connectDB, getDB, closeDB } = require('./config/database');
 
 // Routes
-const ping = require('./routes/Ping');
-const spellRoutes = require('./routes/spellroutes');
-const playerRoutes = require('./routes/playerRoutes');
-const inventoryRoutes = require("./routes/inventoryRoutes");
+const pingRoutes = require('./routes/pingRoutes');
 const worldRoutes = require('./routes/worldRoutes');
-
-// Utils
-const logEndpoints = require('./utils/logEndpoints');
-const logCollections = require('./utils/logCollections');
-const { logTemplates: logger } = require('./utils/logTemplates');
+const playerRoutes = require('./routes/playerRoutes');
+const spellRoutes = require('./routes/spellRoutes');
+const inventoryRoutes = require('./routes/inventoryRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json());
-console.log("\n");
-logger.info("Starting up Server...\n");
-connectDB()
-  .then(() => {
+let server;
+
+async function startServer() {
+  const container = new DependencyContainer();
+  const logger = container.get('logger');
+
+  try {
+    app.use(express.json());
+    console.log('Starting server...\n');
+
+    await connectDB();
     const db = getDB();
+    await container.initialize(db);
 
-    app.use('/api/ping', ping());
-    app.use('/api/spells', spellRoutes(db));
-    app.use('/api/players', playerRoutes(db));
-    app.use('/api/inventory', inventoryRoutes(db));
-    app.use('/api/world', worldRoutes(db));
-    app.get('/api/info', (req, res) => {
-      const endpoints = logEndpoints(app);
-      logger.info("Request made to /api/info");
-    
-      res.json({
-        message: "Available API Endpoints",
-        endpoints,
-      });
+    app.use('/api/ping', pingRoutes());
+    app.use('/api/players', playerRoutes(container));
+    app.use('/api/spells', spellRoutes(container));
+    app.use('/api/inventory', inventoryRoutes(container));
+    app.use('/api/world', worldRoutes(container));
+
+
+    server = app.listen(PORT, () => {
+      logger.success(`Server is running on port ${PORT}`);
+    });
+
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        logger.error(`Port ${PORT} is already in use.`);
+        process.exit(1);
+      } else {
+        throw err;
+      }
     });
     
-    logCollections(db);
-    app.listen(PORT, async () => {
-      logger.success(`Server running on port ${PORT}.`);
-    });
-  })
-  .catch((err) => {
-    logger.error(`Failed to connect to the database: ${err.message}`);
-  });
+  } catch (err) {
+    logger.error(`Server startup error: ${err}`);
+  }
+}
 
-process.on('SIGINT', async () => {
-  logger.warning('SIGINT signal received. Closing database connection...');
+// Clean up resources
+async function shutdown() {
+  console.log('Shutting down server...');
+  if (server) {
+    server.close(() => console.log('Server closed.'));
+  }
   await closeDB();
-  logger.info('Database connection closed. Exiting process.');
   process.exit(0);
-});
+}
 
-process.on('SIGTERM', async () => {
-  logger.warning('SIGTERM signal received. Closing database connection...');
-  await closeDB();
-  logger.info('Database connection closed. Exiting process.');
-  process.exit(0);
-});
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
+startServer();

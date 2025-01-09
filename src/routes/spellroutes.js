@@ -1,24 +1,14 @@
 const express = require('express');
-const Dnd5eClient = require('../repositories/Dnd5eClient');
-const SpellRepository = require("../repositories/SpellRepository");
 
-const SpellService = require('../services/SpellService');
-const SpellController = require('../controllers/SpellController');
-
-const validateRequest = require('../middlewares/ValidateRequest');
-const spellValidator = require('../validators/SpellValidator');
-const { logTemplates } = require('../utils/logTemplates');
-
-module.exports = (db) => {
+module.exports = (container) => {
     const router = express.Router();
+    const spellController = container.get('spellController');
+    const logger = container.get('logger');
+
+    const validateRequest = container.get('validateRequest');
+    const spellValidator = container.get('spellValidator');
+
     try {
-        const dnd5eClient = new Dnd5eClient();
-        const spellRepository = new SpellRepository(db.collection('Spells'));
-        
-        const spellService = new SpellService(spellRepository, dnd5eClient, logTemplates);
-        
-        const spellController = new SpellController(spellService, logTemplates);
-        
         router.get('/', (req, res) => spellController.getAll(req, res));
         router.get('/customspells', (req, res) => spellController.getAllCustom(req, res));
         router.get('/:index', (req, res) => spellController.getByIndex(req, res));
@@ -29,9 +19,9 @@ module.exports = (db) => {
         router.put('/update/:index', (req, res) => spellController.update(req, res));
         router.delete('/delete/:index', (req, res) => spellController.delete(req, res));
         
-        logTemplates.success("Spell Module loaded.");
+        logger.success("Spell Module loaded.");
     } catch (err) {
-        logTemplates.warning("Couldn't load Spell Module.", err.message);
+        logger.warning(err);
     }
 
     return router;
