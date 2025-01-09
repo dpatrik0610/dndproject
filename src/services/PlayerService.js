@@ -10,7 +10,30 @@ class PlayerService {
   async getPlayerById(playerId) {
     try {
       if (!playerId) throw new Error("Missing argument 'playerId'.");
+
       return await this.playerRepository.getById(playerId);
+    } catch (err) {
+      console.error(err);
+      throw new Error(err.message);
+    }
+  }
+
+  async getPlayerOverview(playerId) {
+    try {
+      if (!playerId) throw new Error("Missing argument 'playerId'.");
+  
+      const player = await this.playerRepository.getById(playerId);
+      if (!player) throw new Error("Player not found.");
+  
+      // Extract short information
+      const summary = {
+        id: player.id,
+        name: player.name,
+        level: player.level,
+        class: player.class,
+      };
+  
+      return summary;
     } catch (err) {
       console.error(err);
       throw new Error(err.message);
