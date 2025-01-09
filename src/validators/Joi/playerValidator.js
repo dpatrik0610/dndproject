@@ -5,6 +5,7 @@ const playerValidator = Joi.object({
   age: Joi.number().integer().min(0).default(0).required(),
   height: Joi.number().min(0).default(0).required(),
   weight: Joi.number().min(0).default(0).required(),
+  level: Joi.number().default(1).min(1).max(20),
   race: Joi.string().default('Human').required(),
   subrace: Joi.string().allow(null).optional(),
   background: Joi.string().default('Commoner').required(),

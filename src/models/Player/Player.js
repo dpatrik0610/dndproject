@@ -11,6 +11,7 @@ class Player {
       weight: 0,
       race: "Human",
       subrace: null,
+      level : 1,
       background: "Commoner",
       alignment: "Neutral",
       classes: [],
