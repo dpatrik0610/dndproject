@@ -1,24 +1,38 @@
-const Logger = require('./utils/logger');
+// Utilities
+const { logger } = require('./utils/logger');
+
+// Repositories
 const WorldRepository = require('./repositories/WorldRepository');
 const PlayerRepository = require('./repositories/PlayerRepository');
 const Dnd5eClient = require('./repositories/Dnd5eClient');
 const InventoryRepository = require('./repositories/InventoryRepository');
 const SpellRepository = require('./repositories/SpellRepository');
  
+// Services
 const WorldService = require('./services/WorldService');
 const CurrencyService = require('./services/CurrencyService');
 const InventoryService = require('./services/InventoryService');
 const PlayerService = require('./services/PlayerService');
 const SpellService = require('./services/SpellService');
 
-
+// Controllers
 const WorldController = require('./controllers/WorldController');
 const PlayerController = require('./controllers/PlayerController');
 const InventoryController = require('./controllers/InventoryController');
 const SpellController = require('./controllers/SpellController');
 
+// Models
 const CurrencyManager = require('./models/Inventory/CurrencyManager');
 const World = require('./models/World/World');
+
+// Validation
+const validateRequest = require('./middlewares/ValidateRequest');
+const playerValidator = require('./validators/Joi/playerValidator');
+const spellValidator = require('./validators/Joi/spellValidator');
+const worldValidator = require('./validators/Joi/worldValidator');
+const validatePlayerId = require('./validators/Custom/ValidatePlayerId');
+const validateSpells = require('./validators/Custom/ValidateSpells');
+const validateWorldId = require('./validators/Custom/ValidateWorldId');
 
 class DependencyContainer {
   constructor(database) {
@@ -27,10 +41,6 @@ class DependencyContainer {
   }
 
   async initialize() {
-
-    // Logger
-    const logger = new Logger();
-
     // Repositories
     const worldRepository = new WorldRepository(this.db.collection('Worlds'));
     const playerRepository = new PlayerRepository(this.db.collection('Players'));
@@ -51,7 +61,6 @@ class DependencyContainer {
     const inventoryController = new InventoryController(inventoryService, logger);
     const spellController = new SpellController(spellService, logger);
 
-
     // Store dependencies
     this.dependencies = {
       logger,
@@ -70,7 +79,15 @@ class DependencyContainer {
       worldController,
       playerController,
       inventoryController,
-      spellController
+      spellController,
+
+      validateRequest,
+      playerValidator,
+      spellValidator,
+      worldValidator,
+      validatePlayerId,
+      validateWorldId,
+      validateSpells
     };
     return this;
   }
@@ -80,4 +97,4 @@ class DependencyContainer {
   }
 }
 
-module.exports = new DependencyContainer();
+module.exports = DependencyContainer;
