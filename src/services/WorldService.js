@@ -8,7 +8,7 @@ class WorldService {
     try {
       if (!newWorldData) throw new Error("Missing World Data Parameters.");
 
-      const world = await this.repository.createOrUpdate(newWorldData._id, newWorldData);
+      const world = await this.repository.create(newWorldData);
       this.logger.info(`World "${newWorldData.name}" created successfully.`);
 
       return world;
@@ -50,7 +50,7 @@ class WorldService {
       const world = await this.getWorldById(worldId);
 
       Object.assign(world, updates);
-      await this.repository.createOrUpdate(worldId, world);
+      await this.repository.update(worldId, world);
 
       this.logger.info(`World with ID ${worldId} updated successfully.`);
       return world;
