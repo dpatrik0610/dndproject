@@ -1,7 +1,7 @@
 const chalk = require('chalk');
 
 // Predefined Chalk Templates
-const logTemplates = {
+const logger = {
   success: (message) =>
     console.log(chalk.green.bold(`✅ [SUCCESS] ${message}`)),
 
@@ -22,5 +22,5 @@ const logTemplates = {
 };
 
 module.exports = {
-  logTemplates,
+  logger,
 };

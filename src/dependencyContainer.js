@@ -1,5 +1,7 @@
 // Utilities
 const { logger } = require('./utils/logger');
+const logEndpoints = require('./utils/logEndpoints');
+const logCollections = require('./utils/logCollections');
 
 // Repositories
 const WorldRepository = require('./repositories/WorldRepository');
@@ -35,61 +37,67 @@ const validateSpells = require('./validators/Custom/ValidateSpells');
 const validateWorldId = require('./validators/Custom/ValidateWorldId');
 
 class DependencyContainer {
-  constructor(database) {
-    this.dependencies = {};
-    this.db = database;
+  constructor() {
+    this.dependencies = {logger};
   }
 
-  async initialize() {
-    // Repositories
-    const worldRepository = new WorldRepository(this.db.collection('Worlds'));
-    const playerRepository = new PlayerRepository(this.db.collection('Players'));
-    const inventoryRepository = new InventoryRepository(this.db.collection('Inventories'));
-    const spellRepository = new SpellRepository(this.db.collection("Spells"));
-    const dnd5eClient = new Dnd5eClient();
+  async initialize(database) {
+    this.db = database;
 
-    // Services
-    const worldService = new WorldService(worldRepository, logger);
-    const playerService = new PlayerService(playerRepository, logger);
-    const inventoryService = new InventoryService(inventoryRepository, logger);
-    const spellService = new SpellService(spellRepository, dnd5eClient, logger);
-    const currencyService = new CurrencyService(playerRepository, CurrencyManager);
+    try{
+      // Repositories
+      const worldRepository = new WorldRepository(this.db.collection('Worlds'));
+      const playerRepository = new PlayerRepository(this.db.collection('Players'));
+      const inventoryRepository = new InventoryRepository(this.db.collection('Inventories'));
+      const spellRepository = new SpellRepository(this.db.collection("Spells"));
+      const dnd5eClient = new Dnd5eClient();
 
-    // Controllers
-    const worldController = new WorldController(worldService, playerService, logger, World);
-    const playerController = new PlayerController(playerService, currencyService, logger);
-    const inventoryController = new InventoryController(inventoryService, logger);
-    const spellController = new SpellController(spellService, logger);
+      // Services
+      const worldService = new WorldService(worldRepository, logger);
+      const playerService = new PlayerService(playerRepository, logger);
+      const inventoryService = new InventoryService(inventoryRepository, logger);
+      const spellService = new SpellService(spellRepository, dnd5eClient, logger);
+      const currencyService = new CurrencyService(playerRepository, CurrencyManager);
 
-    // Store dependencies
-    this.dependencies = {
-      logger,
-      worldRepository,
-      playerRepository,
-      inventoryRepository,
-      spellRepository,
-      dnd5eClient,
+      // Controllers
+      const worldController = new WorldController(worldService, playerService, logger, World);
+      const playerController = new PlayerController(playerService, currencyService, logger);
+      const inventoryController = new InventoryController(inventoryService, logger);
+      const spellController = new SpellController(spellService, logger);
 
-      worldService,
-      playerService,
-      inventoryService,
-      spellService,
-      currencyService,
+      // Store dependencies
+      this.dependencies = {
+        logger,
+        worldRepository,
+        playerRepository,
+        inventoryRepository,
+        spellRepository,
+        dnd5eClient,
 
-      worldController,
-      playerController,
-      inventoryController,
-      spellController,
+        worldService,
+        playerService,
+        inventoryService,
+        spellService,
+        currencyService,
 
-      validateRequest,
-      playerValidator,
-      spellValidator,
-      worldValidator,
-      validatePlayerId,
-      validateWorldId,
-      validateSpells
-    };
-    return this;
+        worldController,
+        playerController,
+        inventoryController,
+        spellController,
+
+        validateRequest,
+        playerValidator,
+        spellValidator,
+        worldValidator,
+        validatePlayerId,
+        validateWorldId,
+        validateSpells,
+      };
+
+      return this;
+    } catch (err) {
+      logger.log(`Failed to load dependencies: ${err}`);
+    }
   }
 
   get(key) {

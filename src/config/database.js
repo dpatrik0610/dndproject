@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const { logTemplates } = require('../utils/logTemplates');
+const { logger } = require('../utils/logger');
 
 let dbInstance = null;
 let clientInstance = null;
@@ -11,7 +11,7 @@ const connectDB = async () => {
 
   // Check for missing environment variables
   if (!mongoUri || !dbName) {
-    logTemplates.error("MongoDB URI or DB_NAME is not defined. Check your .env file.");
+    logger.error("MongoDB URI or DB_NAME is not defined. Check your .env file.");
     throw new Error("MONGO_URI or DB_NAME not found in environment variables.");
   }
 
@@ -24,10 +24,10 @@ const connectDB = async () => {
     await clientInstance.connect();
     dbInstance = clientInstance.db(dbName);
     
-    logTemplates.success(`Connected to MongoDB database: ${dbInstance.databaseName}`);
+    logger.success(`Connected to MongoDB database: ${dbInstance.databaseName}`);
     return dbInstance;
   } catch (err) {
-    logTemplates.error(`MongoDB connection error: ${err.message}`);
+    logger.error(`MongoDB connection error: ${err.message}`);
     throw err;
   }
 };
@@ -44,7 +44,7 @@ const getDB = () => {
 const closeDB = async () => {
   if (clientInstance) {
     await clientInstance.close();
-    logTemplates.info("MongoDB connection closed.");
+    logger.info("MongoDB connection closed.");
   }
 };
 
@@ -54,7 +54,7 @@ const listCollections = async () => {
 
     return collections.map(col => col.name);
   } catch (err) {
-    logTemplates.error(`Error listing collections: ${err.message}`);
+    logger.error(`Error listing collections: ${err.message}`);
     throw err;
   }
 };
@@ -68,7 +68,7 @@ const getCollection = async (collectionName) => {
 
     return dbInstance.collection(collectionName);
   } catch (err) {
-    logTemplates.error(`Collection error: ${err.message}`);
+    logger.error(`Collection error: ${err.message}`);
     throw err;  
   }
 }
@@ -80,7 +80,7 @@ const checkCollectionExists = async (collectionName) => {
 
     return collections.includes(collectionName);
   } catch (err) {
-    logTemplates.error(`Error checking if collection exists: ${err.message}`);
+    logger.error(`Error checking if collection exists: ${err.message}`);
     throw err;
   }
 };

@@ -1,5 +1,5 @@
 const axios = require('axios');
-const {logTemplates: logger} = require('../utils/logTemplates')
+const { logger } = require('../../utils/logger');
 
 async function validateSpells(req, res, next) {
   try {

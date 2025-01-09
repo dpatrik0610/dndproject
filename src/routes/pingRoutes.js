@@ -5,9 +5,8 @@ module.exports = () => {
 
   router.get('/', (req, res) => {
     const start = Date.now();
-
-    
     const end = Date.now();
+    
     const responseTime = end - start;
     
     res.json({message : 'Pong!', responseTime: responseTime});
