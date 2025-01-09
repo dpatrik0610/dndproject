@@ -1,9 +1,11 @@
 class WorldController {
-    constructor(worldService, logger, WorldModel) {
+    constructor(worldService, playerService, logger, WorldModel) {
         this.worldService = worldService;
         this.logger = logger;
         this.WorldModel = WorldModel;
     }
+    
+    // World CRUD
 
     async getAll(req, res) {
         try {
@@ -79,6 +81,8 @@ class WorldController {
         }
     }
 
+    // Faction Management
+
     async addFaction(req, res) {
         const { worldId } = req.params;
         const { factionData } = req.body;
@@ -96,6 +100,8 @@ class WorldController {
             return res.status(500).json({ message: 'Failed to add faction' });
         }
     }
+
+    // Region Management
 
     async addRegion(req, res) {
         const { worldId } = req.params;
@@ -131,6 +137,8 @@ class WorldController {
         }
     }
 
+    // Economy Management
+
     async updateEconomy(req, res) {
         const { worldId } = req.params;
         const { newEconomyState } = req.body;
@@ -147,6 +155,8 @@ class WorldController {
             return res.status(500).json({ message: 'Failed to update economy state' });
         }
     }
+
+    // Event Management
 
     async addEvent(req, res) {
         const { worldId } = req.params;
@@ -165,11 +175,17 @@ class WorldController {
         }
     }
 
+    // Player Management
+
     async addPlayer(req, res) {
         const { worldId } = req.params;
-        const { playerData } = req.body;
+        const { playerId } = req.params;
+
         try {
-            const world = await this.worldService.addPlayerToWorld(worldId, playerData);
+            const player = await this.playerService.getPlayerOverview(playerId);
+            if (!player) return res.status(404).json({ message: `Player not found: ${playerId}`});
+
+            const world = await this.worldService.addPlayerToWorld(worldId, player);
 
             if (!world) {
                 return res.status(404).json({ message: 'World not found' });
@@ -181,6 +197,24 @@ class WorldController {
             return res.status(500).json({ message: 'Failed to add player' });
         }
     }
+    
+    async removePlayer(req, res) {
+        const { worldId } = req.params;
+        const { playerId } = req.params;
+
+        try {
+            const world = await this.worldService.removePlayerFromWorld(worldId, playerId);
+
+            if (!world) {
+                return res.status(404).json({ message: 'World or Player not found.' });
+            }
+
+            return res.status(200).json({ message: "Player removed from world successfully."})
+        } catch (error) {
+            this.logger.error(`Error removing player (${playerId}) from world: ${worldId}`)
+        }
+    }
+
 }
 
 module.exports = WorldController;

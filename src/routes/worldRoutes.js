@@ -1,11 +1,16 @@
 const express = require('express');
 const World = require('../models/World/World');
+
 const WorldService = require('../services/WorldService');
 const WorldRepository = require('../repositories/WorldRepository');
-const { logTemplates: logger } = require('../utils/logTemplates');
 const WorldController = require('../controllers/WorldController');
+
+const PlayerService = require('../services/PlayerService');
+const PlayerRepository = require('../repositories/PlayerRepository');
+
 const validateRequest = require('../middlewares/ValidateRequest');
 const worldValidator = require('../validators/worldValidator');
+const { logTemplates: logger } = require('../utils/logTemplates');
 
 module.exports = (db) => {
   const router = express.Router();
@@ -13,7 +18,11 @@ module.exports = (db) => {
   try {
     const worldRepository = new WorldRepository(db.collection('Worlds'));
     const worldService = new WorldService(worldRepository, logger);
-    const worldController = new WorldController(worldService, logger, World);
+
+    const playerRepository = new PlayerRepository(db.collection('Players'));
+    const playerService = new PlayerService(playerRepository);
+
+    const worldController = new WorldController(worldService, playerService, logger, World);
     
     router.get('/', (req, res) => worldController.getAll(req, res));
 
@@ -28,8 +37,11 @@ module.exports = (db) => {
     router.post('/:worldId/faction', (req, res) => worldController.addFaction(req, res));
     router.post('/:worldId/item', (req, res) => worldController.addGlobalItem(req, res));
     router.put('/:worldId/economy', (req, res) => worldController.updateEconomy(req, res));
+
     router.post('/:worldId/event', (req, res) => worldController.addEvent(req, res));
-    router.post('/:worldId/player', (req, res) => worldController.addPlayer(req, res));
+    
+    router.post('/:worldId/player/:playerId', (req, res) => worldController.addPlayer(req, res));
+    router.delete('/:worldId/player/:playerId', (req, res) => worldController.removePlayer(req,res));
     
     logger.success('World module loaded.');
   } catch (error) {
