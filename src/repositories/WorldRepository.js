@@ -25,19 +25,21 @@ class WorldRepository {
       const existingWorld = await this.collection.findOne({ name: worldData.name });
   
       if (existingWorld) {
-        throw new Error(`A world with the name '${worldData.name}' already exists.`);
+        const error = new Error(`A world with the name '${worldData.name}' already exists.`);
+        error.status = 409;
+        throw error;
       }
   
       const result = await this.collection.insertOne(worldData);
       return { ...worldData, _id: result.insertedId };
     } catch (error) {
-      throw new Error(`[WorldRepository]: Error creating world: ${error.message}`);
+      throw new Error(`[WorldRepository]: ${error.message}`);
     }
   }
   
   async update(worldId, worldData) {
     try {
-      const existingWorld = await this.collection.findOne({ _id: new ObjectId(worldId) });
+      const existingWorld = await this.collection.findOne({ _id: new ObjectId(String(worldId)) });
   
       if (!existingWorld) {
         throw new Error(`World with ID '${worldId}' not found.`);

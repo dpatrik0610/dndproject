@@ -36,13 +36,18 @@ class WorldController {
 
     async create(req, res) {
         try {
-            const worldData = new this.WorldModel(req.body);
-            const newWorld = await this.worldService.createWorld(worldData);
-
-            return res.status(201).json(newWorld);
+          const worldData = new this.WorldModel(req.body);
+          const newWorld = await this.worldService.createWorld(worldData);
+      
+          return res.status(201).json(newWorld);
         } catch (error) {
-            this.logger.error('Error creating world:', error.message);
-            return res.status(500).json({ message: 'Failed to create world' });
+          this.logger.error('Error creating world:', error.message);
+      
+          if (error.status === 409) {
+            return res.status(409).json({ message: error.message });
+          }
+      
+          return res.status(500).json({ message: 'Failed to create world' });
         }
     }
 
