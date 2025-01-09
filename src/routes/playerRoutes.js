@@ -1,6 +1,7 @@
 const express = require('express');
 const PlayerController = require('../controllers/PlayerController');
 const PlayerService = require('../services/PlayerService');
+const CurrencyService = require('../services/CurrencyService');
 const PlayerRepository = require('../repositories/PlayerRepository');
 const CurrencyManager = require('../models/Inventory/CurrencyManager');
 
@@ -12,10 +13,12 @@ const { logTemplates } = require('../utils/logTemplates');
 module.exports = (db) => {
   const router = express.Router();
   try {
-    const playerRepository = new PlayerRepository(db.collection('Players'));
     const currencyManager = new CurrencyManager();
-    const playerService = new PlayerService(playerRepository, currencyManager);
-    const playerController = new PlayerController(playerService, logTemplates);
+    const playerRepository = new PlayerRepository(db.collection('Players'));
+    const playerService = new PlayerService(playerRepository);
+    const currencyService = new CurrencyService(playerRepository, currencyManager);
+
+    const playerController = new PlayerController(playerService, currencyService, logTemplates);
 
     router.get('/', (req, res) => playerController.getAllPlayers(req, res));
     router.get('/:playerId', (req, res) => playerController.getPlayerById(req, res));

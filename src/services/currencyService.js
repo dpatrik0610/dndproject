@@ -47,3 +47,5 @@ class CurrencyService {
         return this.currencyManager.getTotalCurrency(player);
     }
 }
+
+module.exports = CurrencyService;

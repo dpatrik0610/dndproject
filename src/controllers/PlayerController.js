@@ -1,5 +1,5 @@
 class PlayerController {
-  constructor(playerService, logger) {
+  constructor(playerService, currencyService, logger) {
     this.playerService = playerService;
     this.logger = logger;
   }
@@ -83,7 +83,7 @@ class PlayerController {
         return res.status(400).json({ error: "Missing or invalid 'currencyType' or 'amount'." });
       }
 
-      const message = await this.playerService.addCurrency(playerId, currencyType, amount);
+      const message = await this.currencyService.addCurrency(playerId, currencyType, amount);
       res.status(200).json({ message });
     } catch (err) {
       this.logger.error(err);
@@ -100,7 +100,7 @@ class PlayerController {
         return res.status(400).json({ error: "Missing or invalid 'currencyType' or 'amount'." });
       }
 
-      const message = await this.playerService.removeCurrency(playerId, currencyType, amount);
+      const message = await this.currencyService.removeCurrency(playerId, currencyType, amount);
       res.status(200).json({ message });
     } catch (err) {
       this.logger.error(err);
@@ -117,7 +117,7 @@ class PlayerController {
         return res.status(400).json({ error: "Missing or invalid 'currencyType' or 'amount'." });
       }
 
-      const message = await this.playerService.transferCurrency(fromPlayerId, toPlayerId, currencyType, amount);
+      const message = await this.currencyService.transferCurrency(fromPlayerId, toPlayerId, currencyType, amount);
       res.status(200).json({ message });
     } catch (err) {
       this.logger.error(err);
@@ -133,7 +133,7 @@ class PlayerController {
         return res.status(400).json({ error: "Missing playerId parameter." });
       }
   
-      const totalCurrency = await this.playerService.getTotalCurrency(playerId);
+      const totalCurrency = await this.currencyService.getTotalCurrency(playerId);
       return res.status(200).json({ playerId, totalCurrency });
     } catch (err) {
       this.logger.error(err);
