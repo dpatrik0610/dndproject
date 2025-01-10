@@ -283,7 +283,6 @@ class WorldController {
 
         try {
             const player = await this.playerService.getPlayerOverview(playerId);
-            this.logger.debug(JSON.stringify(player));
 
             if (!player) return res.status(404).json({
                 status: 'error',

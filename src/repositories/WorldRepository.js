@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const LayeredError = require('../utils/LayeredError');
+const { logger } = require("../utils/logger");
 
 class WorldRepository {
   constructor(collection) {
@@ -10,7 +11,7 @@ class WorldRepository {
     try {
       return await this.collection.find().toArray();
     } catch (error) {
-      throw new LayeredError(`Error getting worlds: ${error.message}`, 'WorldRepository');
+      throw new LayeredError(`Error getting worlds: ${error}`, 'WorldRepository');
     }
   }
 
@@ -18,22 +19,20 @@ class WorldRepository {
     try {
       return await this.collection.findOne({ _id: new ObjectId(String(worldId)) });
     } catch (error) {
-      throw new LayeredError(`Error getting world with ID ${worldId}: ${error.message}`, 'WorldRepository');
+      throw new LayeredError(`Error getting world with ID ${worldId}: ${error}`, 'WorldRepository');
     }
   }
 
   async create(worldData) {
     try {
       const existingWorld = await this.collection.findOne({ name: worldData.name });
-
       if (existingWorld) {
         throw new LayeredError(`A world with the name '${worldData.name}' already exists.`, 'WorldRepository');
       }
-
       const result = await this.collection.insertOne(worldData);
       return { ...worldData, _id: result.insertedId };
     } catch (error) {
-      throw new LayeredError(`Error creating world: ${error.message}`, 'WorldRepository');
+      throw new LayeredError(`Error creating world: ${error}`, 'WorldRepository');
     }
   }
 
@@ -49,7 +48,7 @@ class WorldRepository {
 
       return { ...existingWorld, ...worldData };
     } catch (error) {
-      throw new LayeredError(`Error updating world with ID ${worldId}: ${error.message}`, 'WorldRepository');
+      throw new LayeredError(`Error updating world with ID ${worldId}: ${error}`, 'WorldRepository');
     }
   }
 
@@ -58,92 +57,130 @@ class WorldRepository {
       const result = await this.collection.deleteOne({ _id: new ObjectId(String(worldId)) });
       return result.deletedCount > 0;
     } catch (error) {
-      throw new LayeredError(`Error deleting world with ID ${worldId}: ${error.message}`, 'WorldRepository');
+      throw new LayeredError(`Error deleting world with ID ${worldId}: ${error}`, 'WorldRepository');
     }
   }
 
   async addFaction(worldId, faction) {
-    return this._modifyWorldArray(worldId, 'factions', faction, 'add');
+    try {
+      const world = await this.getById(worldId);
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+
+      const updatedFactions = [...world.factions, faction];
+
+      await this.collection.updateOne(
+        { _id: new ObjectId(String(worldId)) },
+        { $set: { factions: updatedFactions } }
+      );
+
+      return await this.getById(worldId);
+    } catch (error) {
+      throw new LayeredError(`Error adding faction to world with ID ${worldId}: ${error}`, 'WorldRepository');
+    }
   }
 
   async addRegion(worldId, region) {
-    return this._modifyWorldArray(worldId, 'regions', region, 'add');
+    try {
+      const world = await this.getById(worldId);
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+
+      const updatedRegions = [...world.regions, region];
+
+      await this.collection.updateOne(
+        { _id: new ObjectId(String(worldId)) },
+        { $set: { regions: updatedRegions } }
+      );
+
+      return await this.getById(worldId);
+    } catch (error) {
+      throw new LayeredError(`Error adding region to world with ID ${worldId}: ${error}`, 'WorldRepository');
+    }
   }
 
   async addGlobalItem(worldId, item) {
-    return this._modifyWorldArray(worldId, 'globalItems', item, 'add');
+    try {
+      const world = await this.getById(worldId);
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+
+      const updatedGlobalItems = [...world.globalItems, item];
+
+      await this.collection.updateOne(
+        { _id: new ObjectId(String(worldId)) },
+        { $set: { globalItems: updatedGlobalItems } }
+      );
+
+      return await this.getById(worldId);
+    } catch (error) {
+      throw new LayeredError(`Error adding global item to world with ID ${worldId}: ${error}`, 'WorldRepository');
+    }
   }
 
   async addEvent(worldId, event) {
-    return this._modifyWorldArray(worldId, 'events', event, 'add');
+    try {
+      const world = await this.getById(worldId);
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+
+      const updatedEvents = [...world.events, event];
+
+      await this.collection.updateOne(
+        { _id: new ObjectId(String(worldId)) },
+        { $set: { events: updatedEvents } }
+      );
+
+      return await this.getById(worldId);
+    } catch (error) {
+      throw new LayeredError(`Error adding event to world with ID ${worldId}: ${error}`, 'WorldRepository');
+    }
   }
 
   async updateEconomy(worldId, newEconomyState) {
     try {
       const world = await this.getById(worldId);
-      world.economyState = newEconomyState;
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+
       await this.collection.updateOne(
         { _id: new ObjectId(String(worldId)) },
-        { $set: { economyState: world.economyState } }
+        { $set: { economyState: newEconomyState } }
       );
-      return world;
+
+      return await this.getById(worldId);
     } catch (error) {
-      throw new LayeredError(`Error updating economy state for world with ID ${worldId}: ${error.message}`, 'WorldRepository');
+      throw new LayeredError(`Error updating economy state for world with ID ${worldId}: ${error}`, 'WorldRepository');
     }
   }
 
   async addPlayer(worldId, player) {
-    return this._modifyWorldArray(worldId, 'players', player, 'add');
+    try {
+      const world = await this.getById(worldId);
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+
+      const updatedPlayers = [...world.players, player];
+
+      await this.collection.updateOne(
+        { _id: new ObjectId(String(worldId)) },
+        { $set: { players: updatedPlayers } }
+      );
+
+      return await this.getById(worldId);
+    } catch (error) {
+      throw new LayeredError(`Error adding player to world with ID ${worldId}: ${error}`, 'WorldRepository');
+    }
   }
 
   async removePlayer(worldId, playerId) {
     try {
       const world = await this.getById(worldId);
-      const playerIndex = world.players.findIndex(player => player.id === playerId);
-
-      if (playerIndex === -1) {
-        throw new LayeredError(`Player with ID ${playerId} not found in world ${worldId}.`, 'WorldRepository');
-      }
-
-      world.players.splice(playerIndex, 1);
-      await this.collection.updateOne(
-        { _id: new ObjectId(String(worldId)) },
-        { $set: { players: world.players } }
-      );
-      return world;
-    } catch (error) {
-      throw new LayeredError(`Error removing player from world with ID ${worldId}: ${error.message}`, 'WorldRepository');
-    }
-  }
-
-  async _modifyWorldArray(worldId, arrayField, newItem, action) {
-    try {
-      const world = await this.getById(worldId);
       if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
-      const updatedArray = [...world[arrayField]];
 
-      switch (action) {
-        case 'add':
-          updatedArray.push(newItem);
-          break;
-          
-        case 'remove':
-          const itemIndex = updatedArray.findIndex(item => item.id === newItem.id);
-          if (itemIndex === -1) throw new LayeredError(`Item not found in ${arrayField}`, 'WorldRepository');
-          updatedArray.splice(itemIndex, 1);
-        break;
-        default:
-          break;
-      }
-
+      const updatedPlayers = world.players.filter(player => String(player.id) !== String(playerId));
       await this.collection.updateOne(
         { _id: new ObjectId(String(worldId)) },
-        { $set: { [arrayField]: updatedArray } }
+        { $set: { players: updatedPlayers } }
       );
 
-      return world;
+      return await this.getById(worldId);
     } catch (error) {
-      throw new LayeredError(`Error modifying array field '${arrayField}' for world with ID ${worldId}: ${error.message}`, 'WorldRepository');
+      throw new LayeredError(`Error removing player from world with ID ${worldId}: ${error}`, 'WorldRepository');
     }
   }
 }
