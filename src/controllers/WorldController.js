@@ -166,7 +166,7 @@ class WorldController {
 
             if (!player) return res.status(404).json({ status: 'error', message: `Player not found: ${playerId}` });
 
-            const world = await this.worldService.addPlayerToWorld(worldId, player);
+            const world = await this.worldService.addPlayerToWorld(worldId, playerId);
 
             if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
