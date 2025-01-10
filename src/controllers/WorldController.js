@@ -1,3 +1,5 @@
+const LayeredError = require('../utils/LayeredError');
+
 class WorldController {
     constructor(worldService, playerService, logger, WorldModel) {
         this.worldService = worldService;
