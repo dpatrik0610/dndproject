@@ -5,23 +5,15 @@ class WorldController {
         this.logger = logger;
         this.WorldModel = WorldModel;
     }
-    
+
     // World CRUD
 
     async getAll(req, res) {
         try {
             const worlds = await this.worldService.getAllWorlds();
-            return res.status(200).json({
-                status: 'success',
-                message: 'Worlds fetched successfully',
-                data: worlds,
-            });
+            return res.json({ status: 'success', data: worlds });
         } catch (error) {
-            this.logger.error('Error fetching worlds:', error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to fetch worlds',
-            });
+            this.handleError(res, error, 'Failed to fetch worlds');
         }
     }
 
@@ -31,24 +23,11 @@ class WorldController {
         try {
             const world = await this.worldService.getWorldById(worldId);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'World found successfully',
-                data: world,
-            });
+            return res.json({ status: 'success', data: world });
         } catch (error) {
-            this.logger.error(`Error fetching world with ID ${worldId}: ${error}`, error);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to fetch world',
-            });
+            this.handleError(res, error, 'Failed to fetch world');
         }
     }
 
@@ -57,23 +36,12 @@ class WorldController {
             const worldData = new this.WorldModel(req.body);
             const newWorld = await this.worldService.createWorld(worldData);
 
-            return res.status(201).json({
-                status: 'success',
-                message: 'World created successfully',
-                data: newWorld,
-            });
+            return res.status(201).json({ status: 'success', data: newWorld });
         } catch (error) {
-            if (error.status === 409) {
-                return res.status(409).json({
-                    status: 'error',
-                    message: `A world with the name '${error.message}' already exists.`,
-                });
+            if (error instanceof LayeredError && error.statusCode === 409) {
+                return res.status(409).json({ status: 'error', message: `World '${error.message}' already exists` });
             }
-
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to create world',
-            });
+            this.handleError(res, error, 'Failed to create world');
         }
     }
 
@@ -84,24 +52,11 @@ class WorldController {
             const worldData = new this.WorldModel(req.body);
             const updatedWorld = await this.worldService.updateWorld(worldId, worldData);
 
-            if (!updatedWorld) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!updatedWorld) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'World updated successfully',
-                data: updatedWorld,
-            });
+            return res.json({ status: 'success', data: updatedWorld });
         } catch (error) {
-            this.logger.error(`Error updating world with ID ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to update world',
-            });
+            this.handleError(res, error, 'Failed to update world');
         }
     }
 
@@ -111,23 +66,11 @@ class WorldController {
         try {
             const deleted = await this.worldService.deleteWorld(worldId);
 
-            if (!deleted) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!deleted) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'World deleted successfully',
-            });
+            return res.json({ status: 'success', message: 'World deleted' });
         } catch (error) {
-            this.logger.error(`Error deleting world with ID ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to delete world',
-            });
+            this.handleError(res, error, 'Failed to delete world');
         }
     }
 
@@ -140,24 +83,11 @@ class WorldController {
         try {
             const world = await this.worldService.addFactionToWorld(worldId, factionData);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'Faction added to world successfully',
-                data: world,
-            });
+            return res.json({ status: 'success', data: world });
         } catch (error) {
-            this.logger.error(`Error adding faction to world ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to add faction',
-            });
+            this.handleError(res, error, 'Failed to add faction');
         }
     }
 
@@ -169,24 +99,11 @@ class WorldController {
         try {
             const world = await this.worldService.addRegionToWorld(worldId, regionData);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'Region added to world successfully',
-                data: world,
-            });
+            return res.json({ status: 'success', data: world });
         } catch (error) {
-            this.logger.error(`Error adding region to world ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to add region',
-            });
+            this.handleError(res, error, 'Failed to add region');
         }
     }
 
@@ -196,24 +113,11 @@ class WorldController {
         try {
             const world = await this.worldService.addGlobalItemToWorld(worldId, itemData);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'Global item added to world successfully',
-                data: world,
-            });
+            return res.json({ status: 'success', data: world });
         } catch (error) {
-            this.logger.error(`Error adding global item to world ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to add global item',
-            });
+            this.handleError(res, error, 'Failed to add global item');
         }
     }
 
@@ -225,24 +129,11 @@ class WorldController {
         try {
             const world = await this.worldService.updateEconomy(worldId, newEconomyState);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'Economy state updated successfully',
-                data: world,
-            });
+            return res.json({ status: 'success', data: world });
         } catch (error) {
-            this.logger.error(`Error updating economy state for world ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to update economy state',
-            });
+            this.handleError(res, error, 'Failed to update economy state');
         }
     }
 
@@ -254,24 +145,11 @@ class WorldController {
         try {
             const world = await this.worldService.addEventToWorld(worldId, eventData);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'Event added to world successfully',
-                data: world,
-            });
+            return res.json({ status: 'success', data: world });
         } catch (error) {
-            this.logger.error(`Error adding event to world ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to add event',
-            });
+            this.handleError(res, error, 'Failed to add event');
         }
     }
 
@@ -284,31 +162,15 @@ class WorldController {
         try {
             const player = await this.playerService.getPlayerOverview(playerId);
 
-            if (!player) return res.status(404).json({
-                status: 'error',
-                message: `Player not found: ${playerId}`
-            });
+            if (!player) return res.status(404).json({ status: 'error', message: `Player not found: ${playerId}` });
 
             const world = await this.worldService.addPlayerToWorld(worldId, player);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World not found',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'Player added to world successfully',
-                data: world,
-            });
+            return res.json({ status: 'success', data: world });
         } catch (error) {
-            this.logger.error(`Error adding player to world ${worldId}:`, error.message);
-            return res.status(500).json({
-                status: 'error',
-                message: 'Failed to add player',
-            });
+            this.handleError(res, error, 'Failed to add player');
         }
     }
 
@@ -319,24 +181,29 @@ class WorldController {
         try {
             const world = await this.worldService.removePlayerFromWorld(worldId, playerId);
 
-            if (!world) {
-                return res.status(404).json({
-                    status: 'error',
-                    message: 'World or Player not found.',
-                });
-            }
+            if (!world) return res.status(404).json({ status: 'error', message: 'World or Player not found' });
 
-            return res.status(200).json({
-                status: 'success',
-                message: 'Player removed from world successfully.',
-            });
+            return res.json({ status: 'success', message: 'Player removed' });
         } catch (error) {
-            this.logger.error(`Error removing player (${playerId}) from world: ${worldId}`);
-            return res.status(500).json({
+            this.handleError(res, error, 'Failed to remove player');
+        }
+    }
+
+    // Utility Method to Handle Errors
+    handleError(res, error, defaultMessage) {
+        this.logger.error(error);
+        
+        if (error instanceof LayeredError) {
+            return res.status(error.statusCode || 500).json({
                 status: 'error',
-                message: 'Failed to remove player from world',
+                message: error.message || defaultMessage,
             });
         }
+
+        return res.status(500).json({
+            status: 'error',
+            message: defaultMessage || 'Internal Server Error',
+        });
     }
 }
 

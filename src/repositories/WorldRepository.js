@@ -27,7 +27,7 @@ class WorldRepository {
     try {
       const existingWorld = await this.collection.findOne({ name: worldData.name });
       if (existingWorld) {
-        throw new LayeredError(`A world with the name '${worldData.name}' already exists.`, 'WorldRepository');
+        throw new LayeredError(`A world with the name '${worldData.name}' already exists.`, 'WorldRepository', 400);
       }
       const result = await this.collection.insertOne(worldData);
       return { ...worldData, _id: result.insertedId };
@@ -39,7 +39,7 @@ class WorldRepository {
   async update(worldId, worldData) {
     try {
       const existingWorld = await this.getById(worldId);
-      if (!existingWorld) throw new LayeredError(`World does not exist: ${worldId}`, "WorldRepository");
+      if (!existingWorld) throw new LayeredError(`World does not exist: ${worldId}`, "WorldRepository", 404);
 
       await this.collection.updateOne(
         { _id: new ObjectId(String(worldId)) },
@@ -64,7 +64,7 @@ class WorldRepository {
   async addFaction(worldId, faction) {
     try {
       const world = await this.getById(worldId);
-      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository', 404);
 
       const updatedFactions = [...world.factions, faction];
 
@@ -82,7 +82,7 @@ class WorldRepository {
   async addRegion(worldId, region) {
     try {
       const world = await this.getById(worldId);
-      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository', 404);
 
       const updatedRegions = [...world.regions, region];
 
@@ -100,7 +100,7 @@ class WorldRepository {
   async addGlobalItem(worldId, item) {
     try {
       const world = await this.getById(worldId);
-      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository', 404);
 
       const updatedGlobalItems = [...world.globalItems, item];
 
@@ -118,7 +118,7 @@ class WorldRepository {
   async addEvent(worldId, event) {
     try {
       const world = await this.getById(worldId);
-      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository', 404);
 
       const updatedEvents = [...world.events, event];
 
@@ -152,7 +152,7 @@ class WorldRepository {
   async addPlayer(worldId, player) {
     try {
       const world = await this.getById(worldId);
-      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository', 404);
 
       const updatedPlayers = [...world.players, player];
 
@@ -170,7 +170,7 @@ class WorldRepository {
   async removePlayer(worldId, playerId) {
     try {
       const world = await this.getById(worldId);
-      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository');
+      if (!world) throw new LayeredError(`World does not exist.`, 'WorldRepository', 404);
 
       const updatedPlayers = world.players.filter(player => String(player.id) !== String(playerId));
       await this.collection.updateOne(
