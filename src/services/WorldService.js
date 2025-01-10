@@ -12,8 +12,7 @@ class WorldService {
       const world = await this.repository.create(newWorldData);
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'createWorld');
     }
   }
 
@@ -22,21 +21,17 @@ class WorldService {
       const worlds = await this.repository.getAll();
       return worlds;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'getAllWorlds');
     }
   }
 
   async getWorldById(worldId) {
     try {
       const world = await this.repository.getById(worldId);
-      if (!world) {
-        return null;
-      }
+      if (!world) return null;
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'getWorldById');
     }
   }
 
@@ -44,70 +39,55 @@ class WorldService {
     try {
       const world = await this.getWorldById(worldId);
       if (!world) throw new Error(`World with ID ${worldId} not found.`);
-
       Object.assign(world, updates);
       await this.repository.update(worldId, world);
-
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'updateWorld');
     }
   }
 
   async deleteWorld(worldId) {
     try {
       const world = await this.getWorldById(worldId);
-
       if (!world) return null;
       await this.repository.delete(worldId);
-
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'deleteWorld');
     }
   }
 
   async addFactionToWorld(worldId, faction) {
     try {
       const world = await this.getWorldById(worldId);
-
       if (!world) throw new Error(`World with ID ${worldId} not found.`);
       await this.repository.addFaction(worldId, faction);
-
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'addFactionToWorld');
     }
   }
 
   async addRegionToWorld(worldId, region) {
     try {
       const world = await this.getWorldById(worldId);
-
       if (!world) throw new Error(`World with ID ${worldId} not found.`);
       await this.repository.addRegion(worldId, region);
-
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'addRegionToWorld');
     }
   }
 
   async addGlobalItemToWorld(worldId, item) {
     try {
       const world = await this.getWorldById(worldId);
-
       if (!world) throw new Error(`World with ID ${worldId} not found.`);
       await this.repository.addGlobalItem(worldId, item);
-
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'addGlobalItemToWorld');
     }
   }
 
@@ -115,28 +95,22 @@ class WorldService {
     try {
       const world = await this.getWorldById(worldId);
       if (!world) throw new Error(`World with ID ${worldId} not found.`);
-
       world.economyState = newEconomyState;
       await this.repository.updateEconomy(worldId, newEconomyState);
-
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'updateEconomy');
     }
   }
 
   async addEventToWorld(worldId, event) {
     try {
       const world = await this.getWorldById(worldId);
-
       if (!world) throw new Error(`World with ID ${worldId} not found.`);
       await this.repository.addEvent(worldId, event);
-
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'addEventToWorld');
     }
   }
 
@@ -144,21 +118,18 @@ class WorldService {
     try {
       const world = await this.getWorldById(worldId);
       if (!world) throw new Error(`World with ID ${worldId} not found.`);
-  
+
       const existingPlayer = world.players.find(existing => String(existing.id) === String(player.id));
       if (existingPlayer) {
-        throw new LayeredError(`Player with ID ${player.id} already exists in the world.`, 'WorldService');
+        throw new LayeredError(`Player with ID ${player.id} already exists in the world.`, 'WorldService - addPlayerToWorld');
       }
-  
+
       await this.repository.addPlayer(worldId, player);
-  
       return await this.getWorldById(worldId);
-  
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'addPlayerToWorld');
     }
-  }  
+  }
 
   async removePlayerFromWorld(worldId, playerId) {
     try {
@@ -167,14 +138,13 @@ class WorldService {
 
       const playerIndex = world.players.findIndex(player => String(player.id) === String(playerId));
       if (playerIndex === -1) {
-        throw new LayeredError(`Player with ID ${playerId} not found in world ${worldId}.`, 'WorldService');
+        throw new LayeredError(`Player with ID ${playerId} not found in world ${worldId}.`, 'WorldService - removePlayerFromWorld');
       }
 
       await this.repository.removePlayer(worldId, playerId);
       return world;
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'removePlayerFromWorld');
     }
   }
 
@@ -182,8 +152,7 @@ class WorldService {
     try {
       return await this.getWorldById(worldId);
     } catch (error) {
-      this.logger.error(error);
-      throw new LayeredError(error, 'WorldService');
+      LayeredError.handleError(error, 'getWorldInfo');
     }
   }
 }
