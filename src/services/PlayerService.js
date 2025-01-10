@@ -4,27 +4,33 @@ class PlayerService {
   }
 
   async getPlayers() {
-    return await this.playerRepository.getAll();
+    try {
+      return await this.playerRepository.getAll();
+    } catch (err) {
+      throw new Error('Failed to fetch players');
+    }
   }
 
   async getPlayerById(playerId) {
     try {
       if (!playerId) throw new Error("Missing argument 'playerId'.");
 
-      return await this.playerRepository.getById(playerId);
+      const player = await this.playerRepository.getById(playerId);
+      if (!player) throw new Error('Player not found.');
+
+      return player;
     } catch (err) {
-      console.error(err);
-      throw new Error(err.message);
+      throw new Error(err.message || 'Failed to fetch player');
     }
   }
 
   async getPlayerOverview(playerId) {
     try {
       if (!playerId) throw new Error("Missing argument 'playerId'.");
-  
+
       const player = await this.playerRepository.getById(playerId);
-      if (!player) throw new Error("Player not found.");
-  
+      if (!player) throw new Error('Player not found.');
+
       // Extract short information
       const summary = {
         id: player._id,
@@ -33,11 +39,10 @@ class PlayerService {
         classes: player.classes,
         level: player.level
       };
-  
+
       return summary;
     } catch (err) {
-      console.error(err);
-      throw new Error(err.message);
+      throw new Error(err.message || 'Failed to retrieve player overview');
     }
   }
 
@@ -46,12 +51,11 @@ class PlayerService {
       if (!playerData) throw new Error("Missing argument 'playerData'.");
 
       const result = await this.playerRepository.create(playerData);
-      if (!result) throw new Error(`Couldn't create player in repository with data: ${JSON.stringify(playerData)}`);
+      if (!result) throw new Error('Failed to create player');
 
       return `Player successfully created with _id: ${result._id}`;
     } catch (err) {
-      console.error(err);
-      throw new Error(err.message);
+      throw new Error(err.message || 'Failed to create player');
     }
   }
 
@@ -60,13 +64,14 @@ class PlayerService {
       if (!playerId || !playerData) throw new Error("Missing argument 'playerId' or 'playerData'.");
 
       const player = await this.playerRepository.getById(playerId);
-      if (!player) throw new Error(`Player with _id ${playerId} doesn't exist.`);
+      if (!player) throw new Error(`Player with _id ${playerId} not found.`);
 
       const result = await this.playerRepository.updatePlayer(playerId, playerData);
+      if (!result) throw new Error(`Failed to update player with _id ${playerId}`);
+
       return `Player (_id: ${playerId}) updated successfully.`;
     } catch (err) {
-      console.error(err);
-      throw new Error(err.message);
+      throw new Error(err.message || 'Failed to update player');
     }
   }
 
@@ -75,16 +80,14 @@ class PlayerService {
       if (!playerId) throw new Error("Missing argument 'playerId'.");
 
       const player = await this.playerRepository.getById(playerId);
-      if (!player) throw new Error(`No player found by _id: ${playerId}`);
+      if (!player) throw new Error(`Player with _id ${playerId} not found.`);
 
       await this.playerRepository.deleteOne(playerId);
       return `Player with _id ${playerId} deleted successfully.`;
     } catch (err) {
-      console.error(err);
-      throw new Error(err.message);
+      throw new Error(err.message || 'Failed to delete player');
     }
   }
-
 }
 
 module.exports = PlayerService;
