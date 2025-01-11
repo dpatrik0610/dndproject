@@ -6,8 +6,8 @@ class CurrencyManager {
     COPPER: 1          // 1 Copper = 1 copper
   };
 
-  static addCurrency(player, currencyType, amount) {
-    if (!player.currency.hasOwnProperty(currencyType)) {
+  static addCurrency(inventory, currencyType, amount) {
+    if (!inventory.currency.hasOwnProperty(currencyType)) {
       throw new Error(`Invalid currency type: ${currencyType}`);
     }
 
@@ -15,12 +15,12 @@ class CurrencyManager {
       throw new Error("Amount must be a positive number");
     }
 
-    player.currency[currencyType] += amount;
-    this.normalizeCurrency(player);
+    inventory.currency[currencyType] += amount;
+    this.normalizeCurrency(inventory);
   }
 
-  static removeCurrency(player, currencyType, amount) {
-    if (!player.currency.hasOwnProperty(currencyType)) {
+  static removeCurrency(inventory, currencyType, amount) {
+    if (!inventory.currency.hasOwnProperty(currencyType)) {
       throw new Error(`Invalid currency type: ${currencyType}`);
     }
 
@@ -28,50 +28,50 @@ class CurrencyManager {
       throw new Error("Amount must be a positive number");
     }
 
-    if (player.currency[currencyType] < amount) {
+    if (inventory.currency[currencyType] < amount) {
       throw new Error(`Insufficient ${currencyType}`);
     }
 
-    player.currency[currencyType] -= amount;
-    this.normalizeCurrency(player);
+    inventory.currency[currencyType] -= amount;
+    this.normalizeCurrency(inventory);
   }
 
-  static getCurrency(player, currencyType) {
-    if (!player.currency.hasOwnProperty(currencyType)) {
+  static getCurrency(inventory, currencyType) {
+    if (!inventory.currency.hasOwnProperty(currencyType)) {
       throw new Error(`Invalid currency type: ${currencyType}`);
     }
 
-    return player.currency[currencyType];
+    return inventory.currency[currencyType];
   }
 
-  static transferCurrency(fromPlayer, toPlayer, currencyType, amount) {
-    if (fromPlayer.currency[currencyType] < amount) {
+  static transferCurrency(fromInventory, toInventory, currencyType, amount) {
+    if (fromInventory.currency[currencyType] < amount) {
       throw new Error(`Insufficient ${currencyType} to transfer`);
     }
 
-    this.removeCurrency(fromPlayer, currencyType, amount);
-    this.addCurrency(toPlayer, currencyType, amount);
+    this.removeCurrency(fromInventory, currencyType, amount);
+    this.addCurrency(toInventory, currencyType, amount);
   }
 
-  static getTotalCurrency(player) {
-    const totalCopper = this.convertToCopper(player);
+  static getTotalCurrency(inventory) {
+    const totalCopper = this.convertToCopper(inventory);
     return this.splitCopper(totalCopper);
   }  
 
-  static normalizeCurrency(player) {
-    const totalCopper = this.convertToCopper(player);
+  static normalizeCurrency(inventory) {
+    const totalCopper = this.convertToCopper(inventory);
     const normalized = this.splitCopper(totalCopper);
 
-    player.currency = normalized;
+    inventory.currency = normalized;
   }
 
-  // Convert the player's entire currency into copper
-  static convertToCopper(player) {
+  // Convert the inventory's entire currency into copper
+  static convertToCopper(inventory) {
     return (
-      player.currency.platinum * this.RATES.PLATINUM +
-      player.currency.gold * this.RATES.GOLD +
-      player.currency.silver * this.RATES.SILVER +
-      player.currency.copper
+      inventory.currency.platinum * this.RATES.PLATINUM +
+      inventory.currency.gold * this.RATES.GOLD +
+      inventory.currency.silver * this.RATES.SILVER +
+      inventory.currency.copper
     );
   }
 

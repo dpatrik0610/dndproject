@@ -44,6 +44,19 @@ class Player {
       reputation: 0,
       npc: false,
       capacity,
+      equipment: {
+        HEAD: {},
+        HAND_LEFT: {},
+        HAND_RIGHT: {},
+        CHEST: {},
+        LEGS: {},
+        FEET: {},
+        BACK: {},
+        NECK: {},
+        RING_LEFT: {},
+        RING_RIGHT: {},
+        OTHER: {}
+      },
       ...args,
     });
 
