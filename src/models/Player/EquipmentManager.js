@@ -1,48 +1,52 @@
-const { BodyParts } = require("./BodyParts");
-
 class EquipmentManager {
-  constructor({ playerId, equipment = [] }) {
-    this.playerId = playerId;
-    this.equipment = equipment;
-  }
-
-  addEquipment(item, bodyPart) {
-    if (!Object.values(BodyParts).includes(bodyPart)) {
+  static addEquipment(player, item, bodyPart) {
+    if (!player.loadout.hasOwnProperty(bodyPart)) {
       throw new Error(`Invalid body part: ${bodyPart}`);
     }
 
-    const existingItem = this.equipment.find(equip => equip.bodyPart === bodyPart);
-    if (existingItem) {
+    const existingItem = player.loadout[bodyPart];
+    if (existingItem && Object.keys(existingItem).length > 0) {
       throw new Error(`There is already equipment in the ${bodyPart} slot.`);
     }
 
-    this.equipment.push({ ...item, bodyPart });
+    player.loadout[bodyPart] = { ...item };
   }
 
-  removeEquipment(bodyPart) {
-    const index = this.equipment.findIndex(equip => equip.bodyPart === bodyPart);
-    if (index === -1) {
+  static removeEquipment(player, bodyPart) {
+    if (!player.loadout.hasOwnProperty(bodyPart)) {
+      throw new Error(`Invalid body part: ${bodyPart}`);
+    }
+
+    if (!player.loadout[bodyPart] || Object.keys(player.loadout[bodyPart]).length === 0) {
       throw new Error(`No equipment found in the ${bodyPart} slot.`);
     }
 
-    this.equipment.splice(index, 1);
+    player.loadout[bodyPart] = {};
   }
 
-  updateEquipment(bodyPart, newItem) {
-    const index = this.equipment.findIndex(equip => equip.bodyPart === bodyPart);
-    if (index === -1) {
-      throw new Error(`No equipment found in the ${bodyPart} slot.`);
+  static updateEquipment(player, bodyPart, newItem) {
+    if (!player.loadout.hasOwnProperty(bodyPart)) {
+      throw new Error(`Invalid body part: ${bodyPart}`);
     }
 
-    this.equipment[index] = { ...newItem, bodyPart };
+    if (!player.loadout[bodyPart] || Object.keys(player.loadout[bodyPart]).length === 0) {
+      throw new Error(`No equipment found in the ${bodyPart} slot to update.`);
+    }
+
+    player.loadout[bodyPart] = { ...newItem };
   }
 
-  getEquipment(bodyPart) {
-    return this.equipment.find(equip => equip.bodyPart === bodyPart) || null;
+  static getEquipment(player, bodyPart) {
+    if (!player.loadout.hasOwnProperty(bodyPart)) {
+      throw new Error(`Invalid body part: ${bodyPart}`);
+    }
+
+    return player.loadout[bodyPart] || null;
   }
 
-  listEquipment() {
-    return this.equipment;
+
+  static listEquipment(player) {
+    return player.loadout;
   }
 }
 
