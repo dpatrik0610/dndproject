@@ -44,7 +44,7 @@ class Player {
       reputation: 0,
       npc: false,
       capacity,
-      equipment: {
+      loadout: {
         HEAD: {},
         HAND_LEFT: {},
         HAND_RIGHT: {},
