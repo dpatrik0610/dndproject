@@ -9,7 +9,8 @@ const PlayerRepository = require('./repositories/PlayerRepository');
 const Dnd5eClient = require('./repositories/Dnd5eClient');
 const InventoryRepository = require('./repositories/InventoryRepository');
 const SpellRepository = require('./repositories/SpellRepository');
- 
+// const EquipmentRepository = require('./repositories/EquipmentRepository');
+
 // Services
 const WorldService = require('./services/WorldService');
 const CurrencyService = require('./services/CurrencyService');
@@ -50,6 +51,7 @@ class DependencyContainer {
       const playerRepository = new PlayerRepository(this.db.collection('Players'));
       const inventoryRepository = new InventoryRepository(this.db.collection('Inventories'));
       const spellRepository = new SpellRepository(this.db.collection("Spells"));
+      //const EquipmentRepository = new EquipmentRepository(this.db.collection("Equipments"));
       const dnd5eClient = new Dnd5eClient();
 
       // Services
@@ -98,7 +100,7 @@ class DependencyContainer {
 
       return this;
     } catch (err) {
-      logger.log(`Failed to load dependencies: ${err}`);
+      logger.error(`Failed to load dependencies: ${err}`);
     }
   }
 

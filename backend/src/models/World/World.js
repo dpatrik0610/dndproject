@@ -9,7 +9,7 @@ class World {
       events = [],
       npcList = [],
       currencies = [],
-      globalItems = [],
+      npcs = [],
       economyState = {},
       lore = {},
       weatherPatterns = {},
@@ -23,12 +23,11 @@ class World {
       description,
       factions,         // List of factions within the world
       regions,          // Geographical regions with important locations and settlements
-      quests,           // Active and completed quests within the world
+      quests,           // Active and completed quests within the world.
       events,           // Major world events (wars, disasters, etc.)
       npcList,          // NPCs that exist in the world, including factions, leaders, etc.
-      currencies,       // Types of currency used in the world (gold, silver, etc.)
-      globalItems,      // Legendary items, artifacts, and treasures in the world
-      economyState,     // The current economy: market prices, trade, etc.
+      npcs,             // NPC data
+      economyState,     // The current economy: market prices
       lore,             // Lore about the world's history, races, gods, etc.
       weatherPatterns,  // Weather patterns (seasons, storms, etc.)
       currentTime,      // Current time of the campaign.

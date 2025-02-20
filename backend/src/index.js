@@ -1,5 +1,6 @@
 require('dotenv').config({ path: './.env' });
 const express = require('express');
+const cors = require('cors');
 const DependencyContainer = require('./dependencyContainer');
 const { connectDB, getDB, closeDB } = require('./config/database');
 
@@ -7,7 +8,7 @@ const { connectDB, getDB, closeDB } = require('./config/database');
 const pingRoutes = require('./routes/pingRoutes');
 const worldRoutes = require('./routes/worldRoutes');
 const playerRoutes = require('./routes/playerRoutes');
-const spellRoutes = require('./routes/spellRoutes');
+const spellRoutes = require('./routes/spellroutes');
 const inventoryRoutes = require('./routes/inventoryRoutes');
 const infoRoutes = require('./routes/infoRoutes');
 
@@ -15,12 +16,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const container = new DependencyContainer();
 const logger = container.get('logger');
-
 let server;
 
 async function startServer() {
 
   try {
+    app.use(cors());
     app.use(express.json());
     logger.info('Starting server...\n');
 
@@ -31,7 +32,7 @@ async function startServer() {
     app.use('/api/ping', pingRoutes());
     app.use('/api/players', playerRoutes(container));
     app.use('/api/spells', spellRoutes(container));
-    app.use('/api/inventory', inventoryRoutes(container));
+    // app.use('/api/inventory', inventoryRoutes(container));
     app.use('/api/world', worldRoutes(container));
     app.use('/api/info', infoRoutes(container, app));
 

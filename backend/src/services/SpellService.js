@@ -93,7 +93,6 @@ class SpellService {
     if (!spellIndex || !spellData) throw new Error("Argument must have a value!");
 
     try {
-      this.logger.log(spellIndex);
       const updateResult = await this.spellRepository.updateSpell(spellIndex, spellData);
   
       if (updateResult.modifiedCount === 0) {
